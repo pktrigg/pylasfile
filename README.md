@@ -2,7 +2,7 @@
 python native las read/write module
 
 # Public Header Block
-# FileSignature (“LASF”) char[4] 4 bytes                          4c
+# FileSignature (“LASF”) char[4] 4 bytes                          4s
 # FileSourceID unsigned short 2 bytes                             H
 # GlobalEncoding unsigned short 2 bytes                           H
 # ProjectIDGUIDdata1 unsigned long 4 bytes                        L
