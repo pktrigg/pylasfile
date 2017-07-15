@@ -22,36 +22,103 @@
 import os.path
 import struct
 import pprint
-# import sys
-
+import time
+import datetime
 
 def main():
+    start_time = time.time() # time the process
     #open the ALL file for reading by creating a new ALLReader class and passin in the filename to open.
-    # filename =   "C:/Python27/ArcGIS10.3/pyall-master/em2000-0017-e_007-20111101-093632.all"
-    # filename =   "C:/development/Python/m3Sample.all"
     filename = "C:/development/python/sample.las"
     r = lasreader(filename)
     r.readhdr()
     print (r)
 
-    for i in range(r.NumberofVariableLengthRecords):
+    for i in range(r.hdr['NumberofVariableLengthRecords']):
         r.readvariablelengthrecord()
 
     # now find the start point for the point records
     r.seekPoints()
-    for i in range(r.Numberofpointrecords):
-        r.readpointrecord()
+    points = r.readpointrecords(64)
+    # points = r.readpointrecords(r.Numberofpointrecords)
+
+    for p in points:
+        print ("%.3f, %.3f %.3f" % ((p[0] * r.Xscalefactor) + r.Xoffset, (p[1] * r.Yscalefactor) + r.Yoffset, (p[2] * r.Zscalefactor) + r.Zoffset))
+
+    print("Duration %.3fs" % (time.time() - start_time )) # time the process
+
+###############################################################################
+# class laswriter:
+#     def __init__(self, filename):
+#         self.fileName = filename
+#         self.fileptr = open(filename, 'wb')        
+#         self.hdrfmt = "<4sHHLHH8sBB32s32sHHHLLBHL5LddddddddddddQQLQ15Q"
+#         self.hdrlen = struct.calcsize(self.hdrfmt)
+
+        # # hdr = {}
+        # hdr["FileSignature"] =                        "LASF"
+        # hdr['FileSourceID'] =                         0
+        # hdr ["GlobalEncoding"] =                      17
+        # hdr ["ProjectIDGUIDdata1"] =                  0
+        # hdr ["ProjectIDGUIDdata2"] =                  0
+        # hdr ["ProjectIDGUIDdata3"] =                  0
+        # hdr ["ProjectIDGUIDdata4"] =                  0 #4 valuespkpk
+        # hdr ["VersionMajor"] =                        1
+        # hdr ["VersionMinor"] =                        4
+        # hdr ["SystemIdentifier"] =                    "pylasfile writer"
+        # hdr ["GeneratingSoftware"] =                  "pylasfile writer"
+        # hdr ["FileCreationDayofYear"] =               datetime.datetime.now().timetuple().tm_yday
+        # hdr ["FileCreationYear"] =                    datetime.datetime.now().year
+        # hdr ["HeaderSize"] =                          375
+        # hdr ["Offsettopointdata"] =                   375
+        # hdr ["NumberofVariableLengthRecords"] =       0
+        # hdr ["PointDataRecordFormat"] =               1
+        # hdr ["PointDataRecordLength"] =               1
+        # hdr ["LegacyNumberofpointrecords"] =          0
+        # hdr ["LegacyNumberofpointsbyreturn"] =        [0,0,0,0]
+        # hdr ["Xscalefactor"] =                        1
+        # hdr ["Yscalefactor"] =                        1
+        # hdr ["Zscalefactor"] =                        1
+        # hdr ["Xoffset"] =                             0
+        # hdr ["Yoffset"] =                             0
+        # hdr ["Zoffset"] =                             0
+        # hdr ["MaxX"] =                                0
+        # hdr ["MinX"] =                                0
+        # hdr ["MaxY"] =                                0
+        # hdr ["MinY"] =                                0
+        # hdr ["MaxZ"] =                                0
+        # hdr ["MinZ"] =                                0
+        # hdr ["StartofWaveformDataPacketRecord"] =     0
+        # hdr ["StartoffirstExtendedVariableLengthRecord"] =    0
+        # hdr ["NumberofExtendedVariableLengthRecords"] =       0
+        # hdr ["Numberofpointrecords"] =                        0
+        # hdr ["Numberofpointsbyreturn"] =                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
+        # hdrList = hdr.values()
+        # h = tuple(hdrList)
+    # def writeHeader():
+
+        # convert the header variables into a list, then conver the list into a tuple so we can pack it
+        # data = struct.pack(self.hdrfmt)
+        # self.fileptr.write(data)
+
+# values = (1, 'ab', 2.7)
+# s = struct.Struct('I 2s f')
+# packed_data = s.pack(*values)
+
 
 class lasreader:
-
     def __init__(self, filename):
         if not os.path.isfile(filename):
             print ("file not found:", filename)
         self.fileName = filename
         self.fileptr = open(filename, 'rb')        
         self.fileSize = os.path.getsize(filename)
-        # self.recordDate = ""
-        # self.recordTime = ""
+        self.hdrfmt = "<4sHHLHH8sBB32s32sHHHLLBHL5LddddddddddddQQLQ15Q"
+        self.hdrlen = struct.calcsize(self.hdrfmt)
+
+        self.ptfmt1 = "<lllHBBbBHd"
+        self.ptfmt1len = struct.calcsize(self.ptfmt1)
+        self.hdr = {}
 
     def close(self):
         self.fileptr.close()
@@ -61,23 +128,33 @@ class lasreader:
         self.fileptr.seek(0, 0)                
 
     def seekPoints(self):
-        # go back to start of file
-        self.fileptr.seek(self.Offsettopointdata, 0)                
+        # set the file pointer to the start of the points block
+        self.fileptr.seek(self.hdr['Offsettopointdata'], 0)                
 
     def __str__(self):
         return pprint.pformat(vars(self))
 
-    def readpointrecord(self):
+    def readpointrecords(self, recordsToRead=1):
+        data = self.fileptr.read(self.ptfmt1len * recordsToRead)
+        result = []
+        i = 0
+        for r in range(recordsToRead):
+            j = i+self.ptfmt1len
+            result.append(struct.unpack(self.ptfmt1, data[i:j]))
+            i = j
+        return result
+
+    def readpointrecord(self, recordsToRead=1):
         if self.PointDataRecordFormat == 1:
                 
-            ptfmt = "<3lHBBbBHd"
+            ptfmt = "<lllHBBbBHd"
             ptlen = struct.calcsize(ptfmt)
             data = self.fileptr.read(ptlen)
             s = struct.unpack(ptfmt, data)
 
             self.X                   = s[0]
             self.Y                   = s[1]
-            self.Y                   = s[2]
+            self.Z                   = s[2]
             self.Intensity           = s[3]
             self.ReturnNumber        = s[4]
             self.NumberofReturns     = s[4]
@@ -103,53 +180,62 @@ class lasreader:
 
         # now read the variable data
         self.vlrdata = self.fileptr.read(self.vlrRecordLengthAfterHeader)
+        print (self.vlrdata)
 
     def readhdr(self):
+        data = self.fileptr.read(self.hdrlen)
+        s = struct.unpack(self.hdrfmt, data)
 
-        hdrfmt = "<4sHHLHH8sBB32s32sHHHLLBHL5LddddddddddddQQLQ15Q"
-        hdrlen = struct.calcsize(hdrfmt)
+        hdr = {}
+        hdr["FileSignature"] =                        s[0]
+        hdr['FileSourceID'] =                         s[1]
+        hdr ["GlobalEncoding"] =                      s[2]
+        hdr ["ProjectIDGUIDdata1"] =                  s[3]
+        hdr ["ProjectIDGUIDdata2"] =                  s[4]
+        hdr ["ProjectIDGUIDdata3"] =                  s[5]
+        hdr ["ProjectIDGUIDdata4"] =                  s[6]
+        hdr ["VersionMajor"] =                        s[7]
+        hdr ["VersionMinor"] =                        s[8]
+        hdr ["SystemIdentifier"] =                    s[9]
+        hdr ["GeneratingSoftware"] =                  s[10]
+        hdr ["FileCreationDayofYear"] =               s[11]
+        hdr ["FileCreationYear"] =                    s[12]
+        hdr ["HeaderSize"] =                          s[13]
+        hdr ["Offsettopointdata"] =                   s[14]
+        hdr ["NumberofVariableLengthRecords"] =       s[15]
+        hdr ["PointDataRecordFormat"] =               s[16]
+        hdr ["PointDataRecordLength"] =               s[17]
+        hdr ["LegacyNumberofpointrecords"] =          s[18]
+        hdr ["LegacyNumberofpointsbyreturn"] =        s[19:23]
+        hdr ["Xscalefactor"] =                        s[24]
+        hdr ["Yscalefactor"] =                        s[25]
+        hdr ["Zscalefactor"] =                        s[26]
+        hdr ["Xoffset"] =                             s[27]
+        hdr ["Yoffset"] =                             s[28]
+        hdr ["Zoffset"] =                             s[29]
+        hdr ["MaxX"] =                                s[30]
+        hdr ["MinX"] =                                s[31]
+        hdr ["MaxY"] =                                s[32]
+        hdr ["MinY"] =                                s[33]
+        hdr ["MaxZ"] =                                s[34]
+        hdr ["MinZ"] =                                s[35]
+        hdr ["StartofWaveformDataPacketRecord"] =     s[36]
+        hdr ["StartoffirstExtendedVariableLengthRecord"] =    s[37]
+        hdr ["NumberofExtendedVariableLengthRecords"] =       s[38]
+        hdr ["Numberofpointrecords"] =                        s[39]
+        hdr ["Numberofpointsbyreturn"] =                      s[40:55]
 
-        # curr = self.fileptr.tell()
-        data = self.fileptr.read(hdrlen)
-        s = struct.unpack(hdrfmt, data)
+        self.Xscalefactor = hdr['Xscalefactor']
+        self.Yscalefactor = hdr['Yscalefactor']
+        self.Zscalefactor = hdr['Zscalefactor']
+        self.Xoffset = hdr['Xoffset']
+        self.Yoffset = hdr['Yoffset']
+        self.Zoffset = hdr['Zoffset']
 
-        self.FileSignature                      = s[0]
-        self.FileSourceID                       = s[1]
-        self.GlobalEncoding                     = s[2]
-        self.ProjectIDGUIDdata1                 = s[3]
-        self.ProjectIDGUIDdata2                 = s[4]
-        self.ProjectIDGUIDdata3                 = s[5]
-        self.ProjectIDGUIDdata4                 = s[6]
-        self.VersionMajor                       = s[7]
-        self.VersionMinor                       = s[8]
-        self.SystemIdentifier                   = s[9]
-        self.GeneratingSoftware                 = s[10]
-        self.FileCreationDayofYear              = s[11]
-        self.FileCreationYear                   = s[12]
-        self.HeaderSize                         = s[13]
-        self.Offsettopointdata                  = s[14]
-        self.NumberofVariableLengthRecords      = s[15]
-        self.PointDataRecordFormat              = s[16]
-        self.PointDataRecordLength              = s[17]
-        self.LegacyNumberofpointrecords         = s[18]
-        self.LegacyNumberofpointsbyreturn       = s[19:23]
-        self.Xscalefactor                       = s[24]
-        self.Yscalefactor                       = s[25]
-        self.Zscalefactor                       = s[26]
-        self.Xoffset                            = s[27]
-        self.Yoffset                            = s[28]
-        self.Zoffset                            = s[29]
-        self.MaxX                               = s[30]
-        self.MinX                               = s[31]
-        self.MaxY                               = s[32]
-        self.MinY                               = s[33]
-        self.MaxZ                               = s[34]
-        self.MinZ                               = s[35]
-        self.StartofWaveformDataPacketRecord    = s[36]
-        self.StartoffirstExtendedVariableLengthRecord   = s[37]
-        self.NumberofExtendedVariableLengthRecords      = s[38]
-        self.Numberofpointrecords                       = s[39]
-        self.Numberofpointsbyreturn                     = s[40:55]
+        hdrList = hdr.values()
+        h = tuple(hdrList)
+
+        self.hdr = hdr
 
 if __name__ == "__main__":
         main()
