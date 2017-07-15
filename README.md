@@ -57,7 +57,7 @@ NumberofExtendedVariableLengthRecords unsigned long 4 bytes *           L
 Numberofpointrecords unsigned long long 8 bytes *                       Q
 Numberofpointsbyreturn unsigned long long [15] 120 bytes                15Q
 ```
-
+  
 ## Python Struct format characters
 ```
 Format	C Type	            Python type	            Standard size	    
