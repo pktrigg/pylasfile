@@ -18,7 +18,7 @@ Implement writer and confirm it is a valid file
 
 
 ## Public Header Block
-'''
+```
 FileSignature (“LASF”) char[4] 4 bytes                          4s
 FileSourceID unsigned short 2 bytes                             H
 GlobalEncoding unsigned short 2 bytes                           H
@@ -56,7 +56,7 @@ StartoffirstExtendedVariableLengthRecord unsigned long long 8 bytes *   Q
 NumberofExtendedVariableLengthRecords unsigned long 4 bytes *           L
 Numberofpointrecords unsigned long long 8 bytes *                       Q
 Numberofpointsbyreturn unsigned long long [15] 120 bytes                15Q
-'''
+```
 
 ## Python Struct format characters
 Format	C Type	            Python type	            Standard size	    
