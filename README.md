@@ -16,7 +16,7 @@ Implemented reading of n points into a list
 Basic reader for LAS V1.4
 
 
-# Public Header Block
+## Public Header Block
 # FileSignature (“LASF”) char[4] 4 bytes                          4s
 # FileSourceID unsigned short 2 bytes                             H
 # GlobalEncoding unsigned short 2 bytes                           H
