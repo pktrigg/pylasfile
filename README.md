@@ -39,7 +39,7 @@ PointDataRecordFormat unsigned char 1 byte *                    B
 PointDataRecordLength unsigned short 2 bytes *                  H
 LegacyNumberofpointrecords unsigned long 4 bytes *              L
 LegacyNumberofpoints by return unsigned long [5] 20 bytes *     5L
-Xscalefactor double 8 bytes *                                   d
+Xscalefactor double 8 bytes *                                   d 
 Yscalefactor double 8 bytes *                                   d 
 Zscalefactor double 8 bytes *                                   d 
 Xoffset double 8 bytes *                                        d
