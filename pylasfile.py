@@ -5,7 +5,6 @@
 #notes:         See main at end of script for example how to use this
 #based on ASPRS LAS 1.4-R13 15 July 2013
 
-
 # See readme.md for more details
 
 # LAS FORMAT DEFINITION:
@@ -18,7 +17,6 @@
 # All data are in little-endian format.
 # The public header block contains generic data such as point numbers and point data bounds.
 
-
 import os.path
 import struct
 import pprint
@@ -26,8 +24,7 @@ import time
 import datetime
 
 def main():
-    start_time = time.time() # time the process
-    #open the ALL file for reading by creating a new ALLReader class and passin in the filename to open.
+    start_time = time.time() # time the process so we can keep it quick
     filename = "C:/development/python/sample.las"
     r = lasreader(filename)
     r.readhdr()
@@ -39,7 +36,7 @@ def main():
     # now find the start point for the point records
     r.seekPoints()
     points = r.readpointrecords(64)
-    # points = r.readpointrecords(r.Numberofpointrecords)
+    # points = r.readpointrecords(r.hdr['Numberofpointrecords'])
 
     for p in points:
         print ("%.3f, %.3f %.3f" % ((p[0] * r.Xscalefactor) + r.Xoffset, (p[1] * r.Yscalefactor) + r.Yoffset, (p[2] * r.Zscalefactor) + r.Zoffset))
@@ -47,63 +44,66 @@ def main():
     print("Duration %.3fs" % (time.time() - start_time )) # time the process
 
 ###############################################################################
-# class laswriter:
-#     def __init__(self, filename):
-#         self.fileName = filename
-#         self.fileptr = open(filename, 'wb')        
-#         self.hdrfmt = "<4sHHLHH8sBB32s32sHHHLLBHL5LddddddddddddQQLQ15Q"
-#         self.hdrlen = struct.calcsize(self.hdrfmt)
+class laswriter:
+    def __init__(self, filename):
+        self.fileName = filename
+        self.fileptr = open(filename, 'wb')        
+        self.hdrfmt = "<4sHHLHH8sBB32s32sHHHLLBHL5LddddddddddddQQLQ15Q"
+        self.hdrlen = struct.calcsize(self.hdrfmt)
 
-        # # hdr = {}
-        # hdr["FileSignature"] =                        "LASF"
-        # hdr['FileSourceID'] =                         0
-        # hdr ["GlobalEncoding"] =                      17
-        # hdr ["ProjectIDGUIDdata1"] =                  0
-        # hdr ["ProjectIDGUIDdata2"] =                  0
-        # hdr ["ProjectIDGUIDdata3"] =                  0
-        # hdr ["ProjectIDGUIDdata4"] =                  0 #4 valuespkpk
-        # hdr ["VersionMajor"] =                        1
-        # hdr ["VersionMinor"] =                        4
-        # hdr ["SystemIdentifier"] =                    "pylasfile writer"
-        # hdr ["GeneratingSoftware"] =                  "pylasfile writer"
-        # hdr ["FileCreationDayofYear"] =               datetime.datetime.now().timetuple().tm_yday
-        # hdr ["FileCreationYear"] =                    datetime.datetime.now().year
-        # hdr ["HeaderSize"] =                          375
-        # hdr ["Offsettopointdata"] =                   375
-        # hdr ["NumberofVariableLengthRecords"] =       0
-        # hdr ["PointDataRecordFormat"] =               1
-        # hdr ["PointDataRecordLength"] =               1
-        # hdr ["LegacyNumberofpointrecords"] =          0
-        # hdr ["LegacyNumberofpointsbyreturn"] =        [0,0,0,0]
-        # hdr ["Xscalefactor"] =                        1
-        # hdr ["Yscalefactor"] =                        1
-        # hdr ["Zscalefactor"] =                        1
-        # hdr ["Xoffset"] =                             0
-        # hdr ["Yoffset"] =                             0
-        # hdr ["Zoffset"] =                             0
-        # hdr ["MaxX"] =                                0
-        # hdr ["MinX"] =                                0
-        # hdr ["MaxY"] =                                0
-        # hdr ["MinY"] =                                0
-        # hdr ["MaxZ"] =                                0
-        # hdr ["MinZ"] =                                0
-        # hdr ["StartofWaveformDataPacketRecord"] =     0
-        # hdr ["StartoffirstExtendedVariableLengthRecord"] =    0
-        # hdr ["NumberofExtendedVariableLengthRecords"] =       0
-        # hdr ["Numberofpointrecords"] =                        0
-        # hdr ["Numberofpointsbyreturn"] =                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        hdr = {}
+        hdr["FileSignature"] =                        "LASF"
+        hdr['FileSourceID'] =                         0
+        hdr ["GlobalEncoding"] =                      17
+        hdr ["ProjectIDGUIDdata1"] =                  0
+        hdr ["ProjectIDGUIDdata2"] =                  0
+        hdr ["ProjectIDGUIDdata3"] =                  0
+        hdr ["ProjectIDGUIDdata4"] =                  0 #4 valuespkpk
+        hdr ["VersionMajor"] =                        1
+        hdr ["VersionMinor"] =                        4
+        hdr ["SystemIdentifier"] =                    "pylasfile writer"
+        hdr ["GeneratingSoftware"] =                  "pylasfile writer"
+        hdr ["FileCreationDayofYear"] =               datetime.datetime.now().timetuple().tm_yday
+        hdr ["FileCreationYear"] =                    datetime.datetime.now().year
+        hdr ["HeaderSize"] =                          375
+        hdr ["Offsettopointdata"] =                   375
+        hdr ["NumberofVariableLengthRecords"] =       0
+        hdr ["PointDataRecordFormat"] =               1
+        hdr ["PointDataRecordLength"] =               1
+        hdr ["LegacyNumberofpointrecords"] =          0
+        hdr ["LegacyNumberofpointsbyreturn"] =        [0,0,0,0]
+        hdr ["Xscalefactor"] =                        1
+        hdr ["Yscalefactor"] =                        1
+        hdr ["Zscalefactor"] =                        1
+        hdr ["Xoffset"] =                             0
+        hdr ["Yoffset"] =                             0
+        hdr ["Zoffset"] =                             0
+        hdr ["MaxX"] =                                0
+        hdr ["MinX"] =                                0
+        hdr ["MaxY"] =                                0
+        hdr ["MinY"] =                                0
+        hdr ["MaxZ"] =                                0
+        hdr ["MinZ"] =                                0
+        hdr ["StartofWaveformDataPacketRecord"] =     0
+        hdr ["StartoffirstExtendedVariableLengthRecord"] =    0
+        hdr ["NumberofExtendedVariableLengthRecords"] =       0
+        hdr ["Numberofpointrecords"] =                        0
+        hdr ["Numberofpointsbyreturn"] =                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
-        # hdrList = hdr.values()
-        # h = tuple(hdrList)
-    # def writeHeader():
+        self.hdr = hdr
+
+    def writeHeader():
 
         # convert the header variables into a list, then conver the list into a tuple so we can pack it
-        # data = struct.pack(self.hdrfmt)
-        # self.fileptr.write(data)
+        hdrList = hdr.values()
+        values = tuple(hdrList)
+        s = struct.Struct(self.hdrfmt)
+        data = struct.pack(*values)
+        self.fileptr.write(data)
 
-# values = (1, 'ab', 2.7)
-# s = struct.Struct('I 2s f')
-# packed_data = s.pack(*values)
+        # values = (1, 'ab', 2.7)
+        # s = struct.Struct('I 2s f')
+        # packed_data = s.pack(*values)
 
 
 class lasreader:
