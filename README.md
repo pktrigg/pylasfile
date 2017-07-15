@@ -7,17 +7,18 @@ This is going to use the stanadrd libraries from python, ie not use numpy, libla
 Implement writer and confirm it is a valid file
 
 # DONE
-Can read 2.9 million points in 2.4 seconds on my laptop, ie about a million points per second.  
-Points 'format 1' reads correclty
-VLR reads correctly
-Header reads correctly
-Implemented reading of header into a dictionary
-Implemented reading of variable length records
-Implemented reading of n points into a list
-Basic reader for LAS V1.4
+* Can read 2.9 million points in 2.4 seconds on my laptop, ie about a million points per second.  
+* Points 'format 1' reads correclty
+* VLR reads correctly
+* Header reads correctly
+* Implemented reading of header into a dictionary
+* Implemented reading of variable length records
+* Implemented reading of n points into a list
+* Basic reader for LAS V1.4
 
 
 ## Public Header Block
+'''
 FileSignature (“LASF”) char[4] 4 bytes                          4s
 FileSourceID unsigned short 2 bytes                             H
 GlobalEncoding unsigned short 2 bytes                           H
@@ -55,6 +56,7 @@ StartoffirstExtendedVariableLengthRecord unsigned long long 8 bytes *   Q
 NumberofExtendedVariableLengthRecords unsigned long 4 bytes *           L
 Numberofpointrecords unsigned long long 8 bytes *                       Q
 Numberofpointsbyreturn unsigned long long [15] 120 bytes                15Q
+'''
 
 ## Python Struct format characters
 Format	C Type	            Python type	            Standard size	    
