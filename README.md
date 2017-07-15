@@ -59,6 +59,7 @@ Numberofpointsbyreturn unsigned long long [15] 120 bytes                15Q
 ```
 
 ## Python Struct format characters
+```
 Format	C Type	            Python type	            Standard size	    
 x	    pad byte	        no value	 	 
 c	    char	            string of length 1	    1	 
@@ -78,3 +79,4 @@ d	    double	            float               	8
 s	    char[]	            string	 	 
 p	    char[]	            string	 	 
 P	    void *	            integer	 	
+```
