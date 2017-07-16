@@ -30,7 +30,7 @@ def main():
     r.readhdr()
     print (r)
 
-    for i in range(r.hdr['NumberofVariableLengthRecords']):
+    for i in range(r.hdr.parameters['NumberofVariableLengthRecords']):
         r.readvariablelengthrecord()
 
     # now find the start point for the point records
@@ -39,15 +39,13 @@ def main():
     # points = r.readpointrecords(r.hdr['Numberofpointrecords'])
 
     for p in points:
-        print ("%.3f, %.3f %.3f" % ((p[0] * r.Xscalefactor) + r.Xoffset, (p[1] * r.Yscalefactor) + r.Yoffset, (p[2] * r.Zscalefactor) + r.Zoffset))
+        print ("%.3f, %.3f %.3f" % ((p[0] * r.hdr.Xscalefactor) + r.hdr.Xoffset, (p[1] * r.hdr.Yscalefactor) + r.hdr.Yoffset, (p[2] * r.hdr.Zscalefactor) + r.hdr.Zoffset))
 
     print("Duration %.3fs" % (time.time() - start_time )) # time the process
 
 ###############################################################################
-class laswriter:
-    def __init__(self, filename):
-        self.fileName = filename
-        self.fileptr = open(filename, 'wb')        
+class lashdr:
+    def __init__(self):
         self.hdrfmt = "<4sHHLHH8sBB32s32sHHHLLBHL5LddddddddddddQQLQ15Q"
         self.hdrlen = struct.calcsize(self.hdrfmt)
 
@@ -90,100 +88,10 @@ class laswriter:
         hdr ["Numberofpointrecords"] =                        0
         hdr ["Numberofpointsbyreturn"] =                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
-        self.hdr = hdr
+        # make it public
+        self.parameters = hdr
 
-    def writeHeader():
-
-        # convert the header variables into a list, then conver the list into a tuple so we can pack it
-        hdrList = hdr.values()
-        values = tuple(hdrList)
-        s = struct.Struct(self.hdrfmt)
-        data = struct.pack(*values)
-        self.fileptr.write(data)
-
-        # values = (1, 'ab', 2.7)
-        # s = struct.Struct('I 2s f')
-        # packed_data = s.pack(*values)
-
-
-class lasreader:
-    def __init__(self, filename):
-        if not os.path.isfile(filename):
-            print ("file not found:", filename)
-        self.fileName = filename
-        self.fileptr = open(filename, 'rb')        
-        self.fileSize = os.path.getsize(filename)
-        self.hdrfmt = "<4sHHLHH8sBB32s32sHHHLLBHL5LddddddddddddQQLQ15Q"
-        self.hdrlen = struct.calcsize(self.hdrfmt)
-
-        self.ptfmt1 = "<lllHBBbBHd"
-        self.ptfmt1len = struct.calcsize(self.ptfmt1)
-        self.hdr = {}
-
-    def close(self):
-        self.fileptr.close()
-        
-    def rewind(self):
-        # go back to start of file
-        self.fileptr.seek(0, 0)                
-
-    def seekPoints(self):
-        # set the file pointer to the start of the points block
-        self.fileptr.seek(self.hdr['Offsettopointdata'], 0)                
-
-    def __str__(self):
-        return pprint.pformat(vars(self))
-
-    def readpointrecords(self, recordsToRead=1):
-        data = self.fileptr.read(self.ptfmt1len * recordsToRead)
-        result = []
-        i = 0
-        for r in range(recordsToRead):
-            j = i+self.ptfmt1len
-            result.append(struct.unpack(self.ptfmt1, data[i:j]))
-            i = j
-        return result
-
-    def readpointrecord(self, recordsToRead=1):
-        if self.PointDataRecordFormat == 1:
-                
-            ptfmt = "<lllHBBbBHd"
-            ptlen = struct.calcsize(ptfmt)
-            data = self.fileptr.read(ptlen)
-            s = struct.unpack(ptfmt, data)
-
-            self.X                   = s[0]
-            self.Y                   = s[1]
-            self.Z                   = s[2]
-            self.Intensity           = s[3]
-            self.ReturnNumber        = s[4]
-            self.NumberofReturns     = s[4]
-            self.ScanDirectionFlag   = s[4]
-            self.EdgeOfFlight        = s[4]
-            self.Classification      = s[5]
-            self.ScanAngleRank       = s[6]
-            self.UserData            = s[7]
-            self.PointSourceID       = s[8]
-            self.GPSTime             = s[9]
-
-    def readvariablelengthrecord(self):
-        vlrhdrfmt = "<H16sHH32s"
-        vlrhdrlen = struct.calcsize(vlrhdrfmt)
-        data = self.fileptr.read(vlrhdrlen)
-        s = struct.unpack(vlrhdrfmt, data)
-
-        self.vlrReserved                   = s[0]
-        self.vlrUserid                     = s[1]
-        self.vlrrecordid                   = s[2]
-        self.vlrRecordLengthAfterHeader    = s[3]
-        self.vlrDescription                = s[4]
-
-        # now read the variable data
-        self.vlrdata = self.fileptr.read(self.vlrRecordLengthAfterHeader)
-        print (self.vlrdata)
-
-    def readhdr(self):
-        data = self.fileptr.read(self.hdrlen)
+    def decodehdr(self, data):
         s = struct.unpack(self.hdrfmt, data)
 
         hdr = {}
@@ -236,6 +144,110 @@ class lasreader:
         h = tuple(hdrList)
 
         self.hdr = hdr
+    
+###############################################################################
+class laswriter:
+    def __init__(self, filename):
+        self.fileName = filename
+        self.fileptr = open(filename, 'wb')        
+        self.hdr = lashdr()
+
+    def writeHeader():
+
+        # convert the header variables into a list, then conver the list into a tuple so we can pack it
+        hdrList = hdr.values()
+        values = tuple(hdrList)
+        s = struct.Struct(self.hdrfmt)
+        data = struct.pack(*values)
+        self.fileptr.write(data)
+
+        # values = (1, 'ab', 2.7)
+        # s = struct.Struct('I 2s f')
+        # packed_data = s.pack(*values)
+
+
+class lasreader:
+    def __init__(self, filename):
+        if not os.path.isfile(filename):
+            print ("file not found:", filename)
+        self.fileName = filename
+        self.fileptr = open(filename, 'rb')        
+        self.fileSize = os.path.getsize(filename)
+        self.hdr = lashdr()
+
+        # self.hdrfmt = "<4sHHLHH8sBB32s32sHHHLLBHL5LddddddddddddQQLQ15Q"
+        # self.hdrlen = struct.calcsize(self.hdrfmt)
+
+        self.ptfmt1 = "<lllHBBbBHd"
+        self.ptfmt1len = struct.calcsize(self.ptfmt1)
+        # self.hdr = {}
+
+    def close(self):
+        self.fileptr.close()
+        
+    def rewind(self):
+        # go back to start of file
+        self.fileptr.seek(0, 0)                
+
+    def seekPoints(self):
+        # set the file pointer to the start of the points block
+        self.fileptr.seek(self.hdr.parameters['Offsettopointdata'], 0)                
+
+    def __str__(self):
+        return pprint.pformat(vars(self))
+
+    def readhdr(self):
+        data = self.fileptr.read(self.hdr.hdrlen)
+        self.hdr.decodehdr(data)
+
+    def readpointrecords(self, recordsToRead=1):
+        data = self.fileptr.read(self.ptfmt1len * recordsToRead)
+        result = []
+        i = 0
+        for r in range(recordsToRead):
+            j = i+self.ptfmt1len
+            result.append(struct.unpack(self.ptfmt1, data[i:j]))
+            i = j
+        return result
+
+    def readpointrecord(self, recordsToRead=1):
+        if self.PointDataRecordFormat == 1:
+                
+            ptfmt = "<lllHBBbBHd"
+            ptlen = struct.calcsize(ptfmt)
+            data = self.fileptr.read(ptlen)
+            s = struct.unpack(ptfmt, data)
+
+            self.X                   = s[0]
+            self.Y                   = s[1]
+            self.Z                   = s[2]
+            self.Intensity           = s[3]
+            self.ReturnNumber        = s[4]
+            self.NumberofReturns     = s[4]
+            self.ScanDirectionFlag   = s[4]
+            self.EdgeOfFlight        = s[4]
+            self.Classification      = s[5]
+            self.ScanAngleRank       = s[6]
+            self.UserData            = s[7]
+            self.PointSourceID       = s[8]
+            self.GPSTime             = s[9]
+
+    def readvariablelengthrecord(self):
+        vlrhdrfmt = "<H16sHH32s"
+        vlrhdrlen = struct.calcsize(vlrhdrfmt)
+        data = self.fileptr.read(vlrhdrlen)
+        s = struct.unpack(vlrhdrfmt, data)
+
+        self.vlrReserved                   = s[0]
+        self.vlrUserid                     = s[1]
+        self.vlrrecordid                   = s[2]
+        self.vlrRecordLengthAfterHeader    = s[3]
+        self.vlrDescription                = s[4]
+
+        # now read the variable data
+        self.vlrdata = self.fileptr.read(self.vlrRecordLengthAfterHeader)
+        print (self.vlrdata)
+
 
 if __name__ == "__main__":
         main()

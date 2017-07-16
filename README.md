@@ -7,6 +7,7 @@ This is going to use the stanadrd libraries from python, ie not use numpy, libla
 Implement writer and confirm it is a valid file
 
 # DONE
+* moved header into bespoke class
 * Can read 2.9 million points in 2.4 seconds on my laptop, ie about a million points per second.  
 * Points 'format 1' reads correclty
 * VLR reads correctly
