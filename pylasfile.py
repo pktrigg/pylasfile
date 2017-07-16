@@ -22,55 +22,114 @@ import struct
 import pprint
 import time
 import datetime
+from collections import OrderedDict
 
 def main():
+
+    # testreader()
+    testwriter()
+
+def testwriter():
+
+    outFileName = os.path.join(os.path.dirname(os.path.abspath("c:/development/python/laswriter.las")), "laswriter.las")
+    outFileName = createOutputFileName(outFileName)
+    writer = laswriter(outFileName)
+    writer.writeHeader()
+    writer.close()
+
+def testreader():
     start_time = time.time() # time the process so we can keep it quick
+
     filename = "C:/development/python/sample.las"
     filename = "C:/development/python/version1.4_format0.las"
+    # create a lasreader class and pass the filename
     r = lasreader(filename)
+    # r.read the header
     r.readhdr()
+
+    # print some metadata about the reader
     print (r)
 
+    # read the variable records
     for i in range(r.hdr.parameters['NumberofVariableLengthRecords']):
         r.readvariablelengthrecord()
 
     # now find the start point for the point records
     r.seekPoints()
+    # read the point data
     points = r.readpointrecords(64)
-    # points = r.readpointrecords(r.hdr['Numberofpointrecords'])
+    # points = r.readpointrecords(r.hdr.parameters['Numberofpointrecords'])
 
     for p in points:
         print ("%.3f, %.3f %.3f" % ((p[0] * r.hdr.Xscalefactor) + r.hdr.Xoffset, (p[1] * r.hdr.Yscalefactor) + r.hdr.Yoffset, (p[2] * r.hdr.Zscalefactor) + r.hdr.Zoffset))
 
     print("Duration %.3fs" % (time.time() - start_time )) # time the process
 
+    return
+
+###############################################################################
+class laswriter:
+    def __init__(self, filename):
+        self.fileName = filename
+        self.fileptr = open(filename, 'wb')        
+        self.hdr = lashdr()
+
+    def close(self):
+        self.fileptr.close()
+        
+    def rewind(self):
+        # go back to start of file
+        self.fileptr.seek(0, 0)                
+
+    def seekPoints(self):
+        # set the file pointer to the start of the points block
+        self.fileptr.seek(self.hdr.parameters['Offsettopointdata'], 0)                
+
+    def writeHeader(self):
+        # convert the header variables into a list, then conver the list into a tuple so we can pack it
+        hdrList = self.hdr.parameters.values()
+        values = tuple(hdrList)
+        s = struct.Struct(self.hdr.hdrfmt)
+        data = s.pack(*values)
+        self.fileptr.write(data)
+
 ###############################################################################
 class lashdr:
     def __init__(self):
-        self.hdrfmt = "<4sHHLHH8sBB32s32sHHHLLBHL5LddddddddddddQQLQ15Q"
+
+        # version 1.4 header format
+        self.hdrfmt = "<4sHHL HH8sBB 32s32sHHH LLBHL 5Ldddd ddddd dddQQ LQ15Q"
+        # self.hdrfmt = "<4sHHL HH8sBB 32s32sHHH LLBHL 5Ldddd ddddd dddQQ LQ15Q"
         self.hdrlen = struct.calcsize(self.hdrfmt)
 
-        hdr = {}
-        hdr["FileSignature"] =                        "LASF"
+        # create a default template for a V1.4 header.  We use this for writing purposes
+        hdr = OrderedDict()
+        hdr["FileSignature"] =                        b'LASF'
         hdr['FileSourceID'] =                         0
         hdr ["GlobalEncoding"] =                      17
         hdr ["ProjectIDGUIDdata1"] =                  0
+        
         hdr ["ProjectIDGUIDdata2"] =                  0
         hdr ["ProjectIDGUIDdata3"] =                  0
-        hdr ["ProjectIDGUIDdata4"] =                  0 #4 valuespkpk
+        hdr ["ProjectIDGUIDdata4"] =                  b"12345678"
+
         hdr ["VersionMajor"] =                        1
         hdr ["VersionMinor"] =                        4
-        hdr ["SystemIdentifier"] =                    "pylasfile writer"
-        hdr ["GeneratingSoftware"] =                  "pylasfile writer"
+        hdr ["SystemIdentifier"] =                    b'pylasfile writer'
+        hdr ["GeneratingSoftware"] =                  b'pylasfile writer'
         hdr ["FileCreationDayofYear"] =               datetime.datetime.now().timetuple().tm_yday
         hdr ["FileCreationYear"] =                    datetime.datetime.now().year
         hdr ["HeaderSize"] =                          375
         hdr ["Offsettopointdata"] =                   375
         hdr ["NumberofVariableLengthRecords"] =       0
         hdr ["PointDataRecordFormat"] =               1
-        hdr ["PointDataRecordLength"] =               1
+        hdr ["PointDataRecordLength"] =               28
         hdr ["LegacyNumberofpointrecords"] =          0
-        hdr ["LegacyNumberofpointsbyreturn"] =        [0,0,0,0]
+        hdr ["LegacyNumberofpointsbyreturn1"] =       0
+        hdr ["LegacyNumberofpointsbyreturn2"] =       0
+        hdr ["LegacyNumberofpointsbyreturn3"] =       0
+        hdr ["LegacyNumberofpointsbyreturn4"] =       0
+        hdr ["LegacyNumberofpointsbyreturn5"] =       0
         hdr ["Xscalefactor"] =                        1
         hdr ["Yscalefactor"] =                        1
         hdr ["Zscalefactor"] =                        1
@@ -85,9 +144,23 @@ class lashdr:
         hdr ["MinZ"] =                                0
         hdr ["StartofWaveformDataPacketRecord"] =     0
         hdr ["StartoffirstExtendedVariableLengthRecord"] =    0
-        hdr ["NumberofExtendedVariableLengthRecords"] =       0
+        hdr ["NumberofExtendedVariableLengthRecords"]   = 0
         hdr ["Numberofpointrecords"] =                        0
-        hdr ["Numberofpointsbyreturn"] =                      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        hdr ["Numberofpointsbyreturn1"] =             0  
+        hdr ["Numberofpointsbyreturn2"] =             0  
+        hdr ["Numberofpointsbyreturn3"] =             0  
+        hdr ["Numberofpointsbyreturn4"] =             0  
+        hdr ["Numberofpointsbyreturn5"] =             0  
+        hdr ["Numberofpointsbyreturn6"] =             0  
+        hdr ["Numberofpointsbyreturn7"] =             0  
+        hdr ["Numberofpointsbyreturn8"] =             0  
+        hdr ["Numberofpointsbyreturn9"] =             0  
+        hdr ["Numberofpointsbyreturn10"] =             0  
+        hdr ["Numberofpointsbyreturn11"] =             0  
+        hdr ["Numberofpointsbyreturn12"] =             0  
+        hdr ["Numberofpointsbyreturn13"] =             0  
+        hdr ["Numberofpointsbyreturn14"] =             0  
+        hdr ["Numberofpointsbyreturn15"] =             0  
 
         # make it public
         self.parameters = hdr
@@ -115,7 +188,11 @@ class lashdr:
         hdr ["PointDataRecordFormat"] =               s[16]
         hdr ["PointDataRecordLength"] =               s[17]
         hdr ["LegacyNumberofpointrecords"] =          s[18]
-        hdr ["LegacyNumberofpointsbyreturn"] =        s[19:23]
+        hdr ["LegacyNumberofpointsbyreturn1"] =       s[19]
+        hdr ["LegacyNumberofpointsbyreturn2"] =       s[20]
+        hdr ["LegacyNumberofpointsbyreturn3"] =       s[21]
+        hdr ["LegacyNumberofpointsbyreturn4"] =       s[22]
+        hdr ["LegacyNumberofpointsbyreturn5"] =       s[23]
         hdr ["Xscalefactor"] =                        s[24]
         hdr ["Yscalefactor"] =                        s[25]
         hdr ["Zscalefactor"] =                        s[26]
@@ -132,7 +209,21 @@ class lashdr:
         hdr ["StartoffirstExtendedVariableLengthRecord"] =    s[37]
         hdr ["NumberofExtendedVariableLengthRecords"] =       s[38]
         hdr ["Numberofpointrecords"] =                        s[39]
-        hdr ["Numberofpointsbyreturn"] =                      s[40:55]
+        hdr ["Numberofpointsbyreturn1"] =                     s[40]
+        hdr ["Numberofpointsbyreturn2"] =                     s[41]
+        hdr ["Numberofpointsbyreturn3"] =                     s[42]
+        hdr ["Numberofpointsbyreturn4"] =                     s[43]
+        hdr ["Numberofpointsbyreturn5"] =                     s[44]
+        hdr ["Numberofpointsbyreturn6"] =                     s[45]
+        hdr ["Numberofpointsbyreturn7"] =                     s[46]
+        hdr ["Numberofpointsbyreturn8"] =                     s[47]
+        hdr ["Numberofpointsbyreturn9"] =                     s[48]
+        hdr ["Numberofpointsbyreturn10"] =                    s[49]
+        hdr ["Numberofpointsbyreturn11"] =                    s[50]
+        hdr ["Numberofpointsbyreturn12"] =                    s[51]
+        hdr ["Numberofpointsbyreturn13"] =                    s[52]
+        hdr ["Numberofpointsbyreturn14"] =                    s[53]
+        hdr ["Numberofpointsbyreturn15"] =                    s[54]
 
         self.PointDataRecordFormat = hdr["PointDataRecordFormat"]
 
@@ -146,29 +237,9 @@ class lashdr:
         hdrList = hdr.values()
         h = tuple(hdrList)
 
-        self.hdr = hdr
+        self.parameters = hdr
     
 ###############################################################################
-class laswriter:
-    def __init__(self, filename):
-        self.fileName = filename
-        self.fileptr = open(filename, 'wb')        
-        self.hdr = lashdr()
-
-    def writeHeader():
-
-        # convert the header variables into a list, then conver the list into a tuple so we can pack it
-        hdrList = hdr.values()
-        values = tuple(hdrList)
-        s = struct.Struct(self.hdrfmt)
-        data = struct.pack(*values)
-        self.fileptr.write(data)
-
-        # values = (1, 'ab', 2.7)
-        # s = struct.Struct('I 2s f')
-        # packed_data = s.pack(*values)
-
-
 class lasreader:
     def __init__(self, filename):
         if not os.path.isfile(filename):
@@ -264,6 +335,31 @@ class lasreader:
         # now read the variable data
         self.vlrdata = self.fileptr.read(self.vlrRecordLengthAfterHeader)
         print (self.vlrdata)
+
+
+###############################################################################
+def createOutputFileName(path):
+     '''Create a valid output filename. if the name of the file already exists the file name is auto-incremented.'''
+     path      = os.path.expanduser(path)
+
+     if not os.path.exists(os.path.dirname(path)):
+         os.makedirs(os.path.dirname(path))
+
+     if not os.path.exists(path):
+        return path
+
+     root, ext = os.path.splitext(os.path.expanduser(path))
+     dir       = os.path.dirname(root)
+     fname     = os.path.basename(root)
+     candidate = fname+ext
+     index     = 1
+     ls        = set(os.listdir(dir))
+     while candidate in ls:
+             candidate = "{}_{}{}".format(fname,index,ext)
+             index    += 1
+
+     return os.path.join(dir, candidate)
+
 
 
 if __name__ == "__main__":
