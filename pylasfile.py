@@ -26,6 +26,7 @@ import datetime
 def main():
     start_time = time.time() # time the process so we can keep it quick
     filename = "C:/development/python/sample.las"
+    filename = "C:/development/python/version1.4_format0.las"
     r = lasreader(filename)
     r.readhdr()
     print (r)
@@ -133,6 +134,8 @@ class lashdr:
         hdr ["Numberofpointrecords"] =                        s[39]
         hdr ["Numberofpointsbyreturn"] =                      s[40:55]
 
+        self.PointDataRecordFormat = hdr["PointDataRecordFormat"]
+
         self.Xscalefactor = hdr['Xscalefactor']
         self.Yscalefactor = hdr['Yscalefactor']
         self.Zscalefactor = hdr['Zscalefactor']
@@ -178,6 +181,10 @@ class lasreader:
         # self.hdrfmt = "<4sHHLHH8sBB32s32sHHHLLBHL5LddddddddddddQQLQ15Q"
         # self.hdrlen = struct.calcsize(self.hdrfmt)
 
+        # format 0
+        self.ptfmt0 = "<lllHBBbBH"
+        self.ptfmt0len = struct.calcsize(self.ptfmt0)
+        # format 1
         self.ptfmt1 = "<lllHBBbBHd"
         self.ptfmt1len = struct.calcsize(self.ptfmt1)
         # self.hdr = {}
@@ -201,36 +208,46 @@ class lasreader:
         self.hdr.decodehdr(data)
 
     def readpointrecords(self, recordsToRead=1):
-        data = self.fileptr.read(self.ptfmt1len * recordsToRead)
-        result = []
-        i = 0
-        for r in range(recordsToRead):
-            j = i+self.ptfmt1len
-            result.append(struct.unpack(self.ptfmt1, data[i:j]))
-            i = j
-        return result
+        if self.hdr.PointDataRecordFormat == 0:
+            data = self.fileptr.read(self.ptfmt0len * recordsToRead)
+            result = []
+            i = 0
+            for r in range(recordsToRead):
+                j = i+self.ptfmt0len
+                result.append(struct.unpack(self.ptfmt0, data[i:j]))
+                i = j
+            return result
 
-    def readpointrecord(self, recordsToRead=1):
-        if self.PointDataRecordFormat == 1:
-                
-            ptfmt = "<lllHBBbBHd"
-            ptlen = struct.calcsize(ptfmt)
-            data = self.fileptr.read(ptlen)
-            s = struct.unpack(ptfmt, data)
+        if self.hdr.PointDataRecordFormat == 1:
+            data = self.fileptr.read(self.ptfmt1len * recordsToRead)
+            result = []
+            i = 0
+            for r in range(recordsToRead):
+                j = i+self.ptfmt1len
+                result.append(struct.unpack(self.ptfmt1, data[i:j]))
+                i = j
+            return result
 
-            self.X                   = s[0]
-            self.Y                   = s[1]
-            self.Z                   = s[2]
-            self.Intensity           = s[3]
-            self.ReturnNumber        = s[4]
-            self.NumberofReturns     = s[4]
-            self.ScanDirectionFlag   = s[4]
-            self.EdgeOfFlight        = s[4]
-            self.Classification      = s[5]
-            self.ScanAngleRank       = s[6]
-            self.UserData            = s[7]
-            self.PointSourceID       = s[8]
-            self.GPSTime             = s[9]
+    # def readpointrecord(self, recordsToRead=1):
+    #     if self.PointDataRecordFormat == 1:
+    #         ptfmt = "<lllHBBbBHd"
+    #         ptlen = struct.calcsize(ptfmt)
+    #         data = self.fileptr.read(ptlen)
+    #         s = struct.unpack(ptfmt, data)
+
+    #         self.X                   = s[0]
+    #         self.Y                   = s[1]
+    #         self.Z                   = s[2]
+    #         self.Intensity           = s[3]
+    #         self.ReturnNumber        = s[4]
+    #         self.NumberofReturns     = s[4]
+    #         self.ScanDirectionFlag   = s[4]
+    #         self.EdgeOfFlight        = s[4]
+    #         self.Classification      = s[5]
+    #         self.ScanAngleRank       = s[6]
+    #         self.UserData            = s[7]
+    #         self.PointSourceID       = s[8]
+    #         self.GPSTime             = s[9]
 
     def readvariablelengthrecord(self):
         vlrhdrfmt = "<H16sHH32s"
