@@ -22,7 +22,8 @@ import struct
 import pprint
 import time
 import datetime
-from collections import OrderedDict
+# from collections import OrderedDict
+import math
 
 def main():
 
@@ -38,23 +39,16 @@ def testwriter():
 
     # now write some points
     pointslist = []
-    # lllHBBbBHd
-    # format 
-    point = []
-    # point.append(123)
-    # point.append(234)
-    # point.append(334)
-    # point.append(434)
-    # point.append(5)
-    # point.append(6)
-    # point.append(7)
-    # point.append(8)
-    # point.append(9)
-    # point.append(10)
-    # pointslist.append(point)
-    p = writer.point0(1,2,3)
+    p = writer.point1(1.1,2.2,3)
     pointslist.append(p)
+    p = writer.point1(4.4,5.5,6.6)
+    pointslist.append(p)
+
+    # before we write any piints, we need to compute the bounding box, scale and offsets
+    writer.computebbox_offsets(pointslist)
     writer.writepoints(pointslist)
+
+    writer.writeHeader()
     writer.close()
 
 
@@ -65,24 +59,60 @@ class laswriter:
         self.fileptr = open(filename, 'wb')        
         self.hdr = lashdr()
 
+        self.supportedformats = self.hdr.getsupportedformats()
+
+    def getsupportedformats():
+        s = []
         # format 0
-        self.ptfmt0 = "<lllHBBbBH"
-        self.ptfmt0len = struct.calcsize(self.ptfmt0)
+        fmt = "<lllHBBbBH"
+        fmtlen = struct.calcsize(fmt)
+        s.append[fmt,fmtlen]
+
         # format 1
-        self.ptfmt1 = "<lllHBBbBHd"
-        self.ptfmt1len = struct.calcsize(self.ptfmt1)
-        # self.hdr = {}
+        fmt = "<lllHBBbBHd"
+        fmtlen = struct.calcsize(fmt)
+        s.append[fmt,fmtlen]
+        return s
 
     def point0(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0):
         return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid)
     
-    def point1(x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0):
+    def point1(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0):
         return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime)
+
+    def computebbox_offsets(self, records):
+        '''
+        compute the bounding box
+        '''
+        for r in records:
+            self.hdr.MaxX = max(self.hdr.MaxX, r[0])
+            self.hdr.MaxY = max(self.hdr.MaxY, r[1])
+            self.hdr.MaxZ = max(self.hdr.MaxZ, r[2])
+            self.hdr.MinX = min(self.hdr.MinX, r[0])
+            self.hdr.MinY = min(self.hdr.MinY, r[1])
+            self.hdr.MinZ = min(self.hdr.MinZ, r[2])
+        
+        self.hdr.Xoffset = math.floor(self.hdr.MinX)
+        self.hdr.Yoffset = math.floor(self.hdr.MinY)
+        self.hdr.Zoffset = 0 #math.floor(self.hdr.MinZ)
+
+        # set the z scale to cm resolution
+        self.hdr.Zscalefactor = 0.01
+
+        if self.hdr.MaxX < 360:
+            # assume geographicals
+            self.hdr.Xscalefactor = 0.0000001
+            self.hdr.Yscalefactor = 0.0000001
+        else:
+            # assume grid
+            self.hdr.Xscalefactor = 0.001
+            self.hdr.Yscalefactor = 0.001
 
     def writepoints(self, records):
         '''
         using a list of point tuples, work them refine them into the las structure then write to disc
         '''
+        formatted = []
         xs = self.hdr.Xscalefactor
         ys = self.hdr.Yscalefactor
         zs = self.hdr.Zscalefactor
@@ -93,19 +123,25 @@ class laswriter:
 
         # refine the point into the integer and byte format, ready for writing
         for r in records:
-            n = (int((r[0] - xo) / xs), 
+            n = (int((r[0] - xo) / xs),
                 int((r[1] - yo) / ys),
-                int((r[2] - zo) / zs)
+                int((r[2] - zo) / zs),
                 int(r[3]),
-                
+                0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                r[8],
+                r[9],
+                r[10],
+                r[11],
+                r[12]
                 )
-
+    
+            formatted.append(n)
         # now write them to disc
-        record_struct = struct.Struct(self.ptfmt1)
-        for r in refined:
-            values = tuple(r)
+        record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+        for r in formatted:
             self.fileptr.write(record_struct.pack(*r))
-
+            self.hdr.Numberofpointrecords += 1
+            
     def close(self):
         self.fileptr.close()
         
@@ -113,9 +149,14 @@ class laswriter:
         # go back to start of file
         self.fileptr.seek(0, 0)                
 
-    def seekPoints(self):
+    def seekPointsstart(self):
         # set the file pointer to the start of the points block
         self.fileptr.seek(self.hdr.Offsettopointdata, 0)                
+
+# pkpkpk not complate
+    def seekPointsstart(self):
+        # set the file pointer to the start of the points block
+        self.fileptr.seek(self.hdr.Offsettopointdata + (self.hdr.Numberofpointrecords*self.hdr.PointDataRecordFormat), 0)                
 
     def writeHeader(self):
         # convert the header variables into a list, then conver the list into a tuple so we can pack it
@@ -123,6 +164,7 @@ class laswriter:
         # values = tuple(hdrList)
         s = struct.Struct(self.hdr.hdrfmt)
         data = s.pack(*values)
+        self.fileptr.seek(0, 0)                
         self.fileptr.write(data)
 
 ###############################################################################
@@ -169,17 +211,17 @@ class lashdr:
         self.Xoffset =                             0
         self.Yoffset =                             0
         self.Zoffset =                             0
-        self.MaxX =                                0
-        self.MinX =                                0
-        self.MaxY =                                0
-        self.MinY =                                0
-        self.MaxZ =                                0
-        self.MinZ =                                0
+        self.MaxX =                                -9999999999 #make the default the extreme opposite, so we compute real values along the way
+        self.MinX =                                9999999999
+        self.MaxY =                                -9999999999
+        self.MinY =                                9999999999
+        self.MaxZ =                                -9999999999
+        self.MinZ =                                9999999999
 
         self.StartofWaveformDataPacketRecord =     0
         self.StartoffirstExtendedVariableLengthRecord =    0
         self.NumberofExtendedVariableLengthRecords   = 0
-        self.Numberofpointrecords =                        0
+        self.Numberofpointrecords =                0
         self.Numberofpointsbyreturn1 =             0  
         self.Numberofpointsbyreturn2 =             0  
         self.Numberofpointsbyreturn3 =             0  
@@ -350,6 +392,19 @@ class lashdr:
         self.Numberofpointsbyreturn14 =                    s[53]
         self.Numberofpointsbyreturn15 =                    s[54]
 
+    def getsupportedformats(self):
+        s = []
+        # format 0
+        fmt = "<lllHBBbBH"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+
+        # format 1
+        fmt = "<lllHBBbBHd"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+        return s
+
 ###############################################################################
 class lasreader:
     def __init__(self, filename):
@@ -359,14 +414,15 @@ class lasreader:
         self.fileptr = open(filename, 'rb')        
         self.fileSize = os.path.getsize(filename)
         self.hdr = lashdr()
-
-        # format 0
-        self.ptfmt0 = "<lllHBBbBH"
-        self.ptfmt0len = struct.calcsize(self.ptfmt0)
-        # format 1
-        self.ptfmt1 = "<lllHBBbBHd"
-        self.ptfmt1len = struct.calcsize(self.ptfmt1)
-        # self.hdr = {}
+        self.supportedformats = self.hdr.getsupportedformats()
+        # self.pointformat = 1
+        # # format 0
+        # self.ptfmt0 = "<lllHBBbBH"
+        # self.ptfmt0len = struct.calcsize(self.ptfmt0)
+        # # format 1
+        # self.ptfmt1 = "<lllHBBbBHd"
+        # self.ptfmt1len = struct.calcsize(self.ptfmt1)
+        # # self.hdr = {}
 
     def close(self):
         self.fileptr.close()
@@ -375,7 +431,7 @@ class lasreader:
         # go back to start of file
         self.fileptr.seek(0, 0)                
 
-    def seekPoints(self):
+    def seekPointsstart(self):
         # set the file pointer to the start of the points block
         self.fileptr.seek(self.hdr.Offsettopointdata, 0)                
 
@@ -387,25 +443,24 @@ class lasreader:
         self.hdr.decodehdr(data)
 
     def readpointrecords(self, recordsToRead=1):
-        if self.hdr.PointDataRecordFormat == 0:
-            data = self.fileptr.read(self.ptfmt0len * recordsToRead)
-            result = []
-            i = 0
-            for r in range(recordsToRead):
-                j = i+self.ptfmt0len
-                result.append(struct.unpack(self.ptfmt0, data[i:j]))
-                i = j
-            return result
+        data = self.fileptr.read(self.supportedformats[self.hdr.PointDataRecordFormat][1] * recordsToRead)
+        result = []
+        i = 0
+        for r in range(recordsToRead):
+            j = i + self.supportedformats[self.hdr.PointDataRecordFormat][1]
+            result.append(struct.unpack(self.supportedformats[self.hdr.PointDataRecordFormat][0], data[i:j]))
+            i = j
+        return result
 
-        if self.hdr.PointDataRecordFormat == 1:
-            data = self.fileptr.read(self.ptfmt1len * recordsToRead)
-            result = []
-            i = 0
-            for r in range(recordsToRead):
-                j = i+self.ptfmt1len
-                result.append(struct.unpack(self.ptfmt1, data[i:j]))
-                i = j
-            return result
+        # if self.hdr.PointDataRecordFormat == 1:
+        #     data = self.fileptr.read(self.ptfmt1len * recordsToRead)
+        #     result = []
+        #     i = 0
+        #     for r in range(recordsToRead):
+        #         j = i+self.ptfmt1len
+        #         result.append(struct.unpack(self.ptfmt1, data[i:j]))
+        #         i = j
+        #     return result
 
     # def readpointrecord(self, recordsToRead=1):
     #     if self.PointDataRecordFormat == 1:
@@ -473,7 +528,7 @@ def testreader():
     start_time = time.time() # time the process so we can keep it quick
 
     filename = "C:/development/python/sample.las"
-    filename = "C:/development/python/version1.4_format0.las"
+    # filename = "C:/development/python/version1.4_format0.las"
     # create a lasreader class and pass the filename
     r = lasreader(filename)
     # r.read the header
@@ -487,7 +542,7 @@ def testreader():
         r.readvariablelengthrecord()
 
     # now find the start point for the point records
-    r.seekPoints()
+    r.seekPointsstart()
     # read the point data
     points = r.readpointrecords(64)
     # points = r.readpointrecords(r.hdr.Numberofpointrecords)
