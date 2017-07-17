@@ -40,15 +40,15 @@ def testwriter():
     writer.writeHeader()
 
     # now write some points
-    writer.hdr.PointDataRecordFormat = 2
+    writer.hdr.PointDataRecordFormat = 1
     pointslist = []
-    for _ in range(10000):
+    for _ in range(1000):
         # p = writer.makepoint2(round(random.uniform(1, 100),6), round(random.uniform(1, 100),6), round(random.uniform(1, 100),6))
         # pointslist.append(p)
 
-        writer.x.append(round(random.uniform(1, 100),6))
-        writer.y.append(round(random.uniform(1, 100),6))
-        writer.z.append(round(random.uniform(1, 100),6))
+        writer.x.append(round(random.uniform(1, 50000000),6))
+        writer.y.append(round(random.uniform(1, 100000),6))
+        writer.z.append(round(random.uniform(1, 1000),6))
 
         
     start_time = time.time() # time the process so we can keep it quick
@@ -121,75 +121,48 @@ class laswriter:
         return s
 
 
-    # def makepoint0(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid)
-    
-    # def makepoint1(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime)
-
-    # def makepoint2(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, red=255, green=255, blue=255):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, red, green, blue)
-
-    # def makepoint3(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime, red, green, blue)
-
-    # def makepoint4(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
-
-    # def makepoint5(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime, red, green, blue, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
-
-    
-    
-    # def makepoint6(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime)
-
-
-    # def makepoint7(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue)
-
-
-    # def makepoint8(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, nir=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue, nir)
-
-    # def makepoint9(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
-
-    # def makepoint10(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, nir=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue, nir, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
-
-
     def computebbox_offsets(self, records):
         '''
         compute the bounding box of all records in the list
         '''
-        for r in records:
-            self.hdr.MaxX = max(self.hdr.MaxX, r[0])
-            self.hdr.MaxY = max(self.hdr.MaxY, r[1])
-            self.hdr.MaxZ = max(self.hdr.MaxZ, r[2])
-            self.hdr.MinX = min(self.hdr.MinX, r[0])
-            self.hdr.MinY = min(self.hdr.MinY, r[1])
-            self.hdr.MinZ = min(self.hdr.MinZ, r[2])
-        
-        self.hdr.Xoffset = math.floor(self.hdr.MinX)
-        self.hdr.Yoffset = math.floor(self.hdr.MinY)
-        self.hdr.Zoffset = math.floor(self.hdr.MinZ)
+
+        self.hdr.MaxX = max(self.x) 
+        self.hdr.MinX = min(self.x) 
+
+        self.hdr.MaxY = max(self.y) 
+        self.hdr.MinY = min(self.y)
+
+        self.hdr.MaxZ = max(self.z) 
+        self.hdr.MinZ = min(self.z) 
+
+        self.hdr.Xoffset = self.hdr.MinX 
+        self.hdr.Yoffset = self.hdr.MinY
+        self.hdr.Zoffset = self.hdr.MinZ
 
         # compute the scale factor based on the maximal number of decimal places in the first and last records.
-        afterDP1 = self.precision_and_scale(self.hdr.MaxX)
-        afterDP2 = self.precision_and_scale(self.hdr.MinX)
-        self.hdr.Xscalefactor = 10**-(max(afterDP1, afterDP2) )
+        # digit1, afterDP1 = self.precision_and_scale(self.hdr.MaxX)
+        # digit2, afterDP2 = self.precision_and_scale(self.hdr.MinX)
+        # self.hdr.Xscalefactor = 10**-(max(afterDP1, afterDP2)-max(digit1,digit2))
 
-        afterDP1 = self.precision_and_scale(self.hdr.MaxY)
-        afterDP2 = self.precision_and_scale(self.hdr.MinY)
-        self.hdr.Yscalefactor = 10**-(max(afterDP1, afterDP2) )
+        digit2, afterDP2 = self.precision_and_scale(self.hdr.MaxX - self.hdr.MinX)
+        self.hdr.Xscalefactor = 10**-(8-digit2)
 
-        afterDP1 = self.precision_and_scale(self.hdr.MaxZ)
-        afterDP2 = self.precision_and_scale(self.hdr.MinZ)
-        self.hdr.Zscalefactor = 10**-(max(afterDP1, afterDP2) )
+        digit2, afterDP2 = self.precision_and_scale(self.hdr.MaxY - self.hdr.MinY)
+        self.hdr.Yscalefactor = 10**-(8-digit2)
+
+        digit2, afterDP2 = self.precision_and_scale(self.hdr.MaxZ - self.hdr.MinZ)
+        self.hdr.Zscalefactor = 10**-(8-digit2)
+
+        # digit1, afterDP1 = self.precision_and_scale(self.hdr.MaxY)
+        # digit2, afterDP2 = self.precision_and_scale(self.hdr.MinY)
+        # self.hdr.Yscalefactor = 10**-(max(afterDP1, afterDP2)-max(digit1,digit2))
+
+        # digit1, afterDP1 = self.precision_and_scale(self.hdr.MaxZ)
+        # digit2, afterDP2 = self.precision_and_scale(self.hdr.MinZ)
+        # self.hdr.Zscalefactor = 10**-(max(afterDP1, afterDP2)-max(digit1,digit2))
 
         # set the z scale to cm resolution
-        self.hdr.Zscalefactor = 0.01
+        # self.hdr.Zscalefactor = 0.01
 
     def precision_and_scale(self, x):
         max_digits = 14
@@ -203,8 +176,8 @@ class laswriter:
         while frac_digits % 10 == 0:
             frac_digits /= 10
         scale = int(math.log10(frac_digits))
-        # return (magnitude + scale, scale, magnitude)
-        return (scale) #return the number of digits after the decimal point only
+        return (magnitude, scale)
+        # return (scale) #return the number of digits after the decimal point only
 
 
     def zerolistmaker(self, n):
@@ -255,35 +228,286 @@ class laswriter:
         if len(self.nir) == 0: 
             self.nir = self.zerolistmaker(len(self.x))
 
-        self.classificationflags = []
-        self.scannerchannel = []
-        self.userdata = []
-        self.scanangle = []
+        if len(self.classificationflags) == 0:
+            self.classificationflags = self.zerolistmaker(len(self.x))
+        if len(self.scannerchannel) == 0:
+            self.scannerchannel = self.zerolistmaker(len(self.x))
+        if len(self.userdata) == 0:
+            self.userdata = self.zerolistmaker(len(self.x))
+        if len(self.scanangle) == 0:
+            self.scanangle = self.zerolistmaker(len(self.x))
 
     def writepoints(self):
+        xs = self.hdr.Xscalefactor
+        ys = self.hdr.Yscalefactor
+        zs = self.hdr.Zscalefactor
+
+        xo = self.hdr.Xoffset
+        yo = self.hdr.Yoffset
+        zo = self.hdr.Zoffset
+    
         self.fixemptylists()
 
-        # if self.hdr.PointDataRecordFormat == 0:
+        self.hdr.Numberofpointrecords += len(self.x)
+        self.hdr.LegacyNumberofpointrecords += len(self.x)
 
-        if self.hdr.PointDataRecordFormat == 1:
-
-            for i in range(self.x):
-                n = (int((x[0] - xo) / xs),
-                    int((y[1] - yo) / ys),
-                    int((z[2] - zo) / zs),
-                    int(r[3]),
+        if self.hdr.PointDataRecordFormat == 0:
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
                     0, #returnNo, numberReturns, ScanDirection, Edgeflightline
-                    r[8],
-                    r[9],
-                    r[10],
-                    r[11],
-                    r[12]
+                    self.classification[i],
+                    self.scanangle[i],
+                    self.userdata[i],
+                    self.pointsourceid[i]
                     )
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
-                self.hdr.Numberofpointrecords += 1
-                self.hdr.LegacyNumberofpointrecords +=1       
+
+        if self.hdr.PointDataRecordFormat == 1:
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
+                    0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                    self.classification[i],
+                    self.scanangle[i],
+                    self.userdata[i],
+                    self.pointsourceid[i],
+                    self.gpstime[i]
+                    )
+                # now write the record to disc
+                record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+                self.fileptr.write(record_struct.pack(*n))
+
+        if self.hdr.PointDataRecordFormat == 2:
+    # def makepoint2(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, red=255, green=255, blue=255):
+    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, red, green, blue)
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
+                    0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                    self.classification[i],
+                    self.scanangle[i],
+                    self.userdata[i],
+                    self.pointsourceid[i],
+                    self.red[i],
+                    self.green[i],
+                    self.blue[i]
+                    )
+                # now write the record to disc
+                record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+                self.fileptr.write(record_struct.pack(*n))
+
+
+        if self.hdr.PointDataRecordFormat == 3:
+    # def makepoint3(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255):
+    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime, red, green, blue)
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
+                    0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                    self.classification[i],
+                    self.scanangle[i],
+                    self.userdata[i],
+                    self.pointsourceid[i],
+                    self.gpstime[i],
+                    self.red[i],
+                    self.green[i],
+                    self.blue[i]
+                    )
+                # now write the record to disc
+                record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+                self.fileptr.write(record_struct.pack(*n))
+
+        if self.hdr.PointDataRecordFormat == 4:
+    # def makepoint4(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
+    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
+                    0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                    self.classification[i],
+                    self.scanangle[i],
+                    self.userdata[i],
+                    self.pointsourceid[i],
+                    self.gpstime[i],
+                    self.wavepacketdescriptorindex[i],
+                    self.byteoffsettowaveformdata[i],
+                    self.waveformpacketsize[i],
+                    self.returnpointwaveformlocation[i],
+                    self.waveX[i],
+                    self.waveY[i],
+                    self.waveZ[i]
+                    )
+                # now write the record to disc
+                record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+                self.fileptr.write(record_struct.pack(*n))
+
+
+        if self.hdr.PointDataRecordFormat == 5:
+    # def makepoint5(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
+    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime, red, green, blue, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
+                    0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                    self.classification[i],
+                    self.scanangle[i],
+                    self.userdata[i],
+                    self.pointsourceid[i],
+                    self.gpstime[i],
+                    self.red[i],
+                    self.green[i],
+                    self.blue[i],
+                    self.wavepacketdescriptorindex[i],
+                    self.byteoffsettowaveformdata[i],
+                    self.waveformpacketsize[i],
+                    self.returnpointwaveformlocation[i],
+                    self.waveX[i],
+                    self.waveY[i],
+                    self.waveZ[i]
+                    )
+                # now write the record to disc
+                record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+                self.fileptr.write(record_struct.pack(*n))
+
+
+        if self.hdr.PointDataRecordFormat == 6:
+    # def makepoint6(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0):
+    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime)
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
+                    0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                    self.classification[i],
+                    self.scanangle[i],
+                    self.userdata[i],
+                    self.pointsourceid[i],
+                    self.gpstime[i]
+                    )
+                # now write the record to disc
+                record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+                self.fileptr.write(record_struct.pack(*n))
+
+        if self.hdr.PointDataRecordFormat == 7:
+    # def makepoint7(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255):
+    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue)
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
+                    0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                    self.classification[i],
+                    self.scanangle[i],
+                    self.userdata[i],
+                    self.pointsourceid[i],
+                    self.gpstime[i],
+                    self.red[i],
+                    self.green[i],
+                    self.blue[i]
+                    )
+                # now write the record to disc
+                record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+                self.fileptr.write(record_struct.pack(*n))
+
+        if self.hdr.PointDataRecordFormat == 8:
+    # def makepoint8(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, nir=0):
+    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue, nir)
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
+                    0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                    self.classification[i],
+                    self.scanangle[i],
+                    self.userdata[i],
+                    self.pointsourceid[i],
+                    self.gpstime[i],
+                    self.red[i],
+                    self.green[i],
+                    self.blue[i],
+                    self.nir[i]
+                    )
+                # now write the record to disc
+                record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+                self.fileptr.write(record_struct.pack(*n))
+
+        if self.hdr.PointDataRecordFormat == 9:
+    # def makepoint9(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
+    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
+                    0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                    self.classification[i],
+                    self.userdata[i],
+                    self.scanangle[i],
+                    self.pointsourceid[i],
+                    self.gpstime[i],
+                    self.red[i],
+                    self.green[i],
+                    self.blue[i],
+                    self.wavepacketdescriptorindex[i],
+                    self.byteoffsettowaveformdata[i],
+                    self.waveformpacketsize[i],
+                    self.returnpointwaveformlocation[i],
+                    self.waveX[i],
+                    self.waveY[i],
+                    self.waveZ[i]
+                    )
+                # now write the record to disc
+                record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+                self.fileptr.write(record_struct.pack(*n))
+
+        if self.hdr.PointDataRecordFormat == 10:
+    # def makepoint10(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, nir=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
+    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue, nir, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
+            for i in range(len(self.x)):
+                n = (int((self.x[i] - xo) / xs),
+                    int((self.y [i] - yo) / ys),
+                    int((self.z [i] - zo) / zs),
+                    int(self.intensity[i]),
+                    0, #returnNo, numberReturns, ScanDirection, Edgeflightline
+                    self.classification[i],
+                    self.userdata[i],
+                    self.scanangle[i],
+                    self.pointsourceid[i],
+                    self.gpstime[i],
+                    self.red[i],
+                    self.green[i],
+                    self.blue[i],
+                    self.wavepacketdescriptorindex[i],
+                    self.byteoffsettowaveformdata[i],
+                    self.waveformpacketsize[i],
+                    self.returnpointwaveformlocation[i],
+                    self.waveX[i],
+                    self.waveY[i],
+                    self.waveZ[i]
+                    )
+                # now write the record to disc
+                record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
+                self.fileptr.write(record_struct.pack(*n))
+
+
 
 
     # def writepoints(self, records):
