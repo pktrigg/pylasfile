@@ -1,15 +1,17 @@
 # pylasfile
 python native las read/write module.
 
-This is going to use the stanadrd libraries from python, ie not use numpy, liblas, or external any dependencies.
+This is going to use the standard libraries from python, ie NOT use numpy, liblas, or external any dependencies.
 
 # 2DO
-* implement mmap
+* add support for lazzip so we can unzip and zip
+* add test for 'LASF' in header, and quit if invalid
+* add test for header byte read so we can see what version las to read
 * add support for las 1.2
 * add support for las 1.3
-* try out mmap to see if it is quicker
 * add VLR for WGS84 CRS
 * add support for extended VLR
+* try out mmap to see if it is quicker
 
 # DONE
 * code clean up

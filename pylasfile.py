@@ -103,7 +103,7 @@ class laswriter:
 
         self.supportedformats = self.hdr.getsupportedformats()
 
-    def write VLR_WGS84():
+    def writeVLR_WGS84(self):
         '''
         compose and write a standard variable length record for the WKY of WGS84 CRS
         '''
