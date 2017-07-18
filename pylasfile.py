@@ -397,7 +397,7 @@ class laswriter:
     # def makepoint6(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0):
     #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime)
             for i in range(len(self.x)):
-                flags = self.setpointflags(self.returnnumber[i], self.numberreturns[i], self.scandirectionflag[i], self.edgeflightline[i])
+                flags = self.setpointflags_6_10(self.returnnumber[i], self.numberreturns[i], self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
                     int((self.y [i] - yo) / ys),
                     int((self.z [i] - zo) / zs),
@@ -417,7 +417,7 @@ class laswriter:
     # def makepoint7(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255):
     #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue)
             for i in range(len(self.x)):
-                flags = self.setpointflags(self.returnnumber[i], self.numberreturns[i], self.scandirectionflag[i], self.edgeflightline[i])
+                flags = self.setpointflags_6_10(self.returnnumber[i], self.numberreturns[i], self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
                     int((self.y [i] - yo) / ys),
                     int((self.z [i] - zo) / zs),
@@ -440,7 +440,7 @@ class laswriter:
     # def makepoint8(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, nir=0):
     #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue, nir)
             for i in range(len(self.x)):
-                flags = self.setpointflags(self.returnnumber[i], self.numberreturns[i], self.scandirectionflag[i], self.edgeflightline[i])
+                flags = self.setpointflags_6_10(self.returnnumber[i], self.numberreturns[i], self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
                     int((self.y [i] - yo) / ys),
                     int((self.z [i] - zo) / zs),
@@ -464,7 +464,7 @@ class laswriter:
     # def makepoint9(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
     #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
             for i in range(len(self.x)):
-                flags = self.setpointflags(self.returnnumber[i], self.numberreturns[i], self.scandirectionflag[i], self.edgeflightline[i])
+                flags = self.setpointflags_6_10(self.returnnumber[i], self.numberreturns[i], self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
                     int((self.y [i] - yo) / ys),
                     int((self.z [i] - zo) / zs),
@@ -494,7 +494,7 @@ class laswriter:
     # def makepoint10(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, nir=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
     #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue, nir, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
             for i in range(len(self.x)):
-                flags = self.setpointflags(self.returnnumber[i], self.numberreturns[i], self.scandirectionflag[i], self.edgeflightline[i])
+                flags = self.setpointflags_6_10(self.returnnumber[i], self.numberreturns[i], self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
                     int((self.y [i] - yo) / ys),
                     int((self.z [i] - zo) / zs),
