@@ -103,72 +103,6 @@ class laswriter:
 
         self.supportedformats = self.hdr.getsupportedformats()
 
-    def getsupportedformats():
-        s = []
-        # format 0
-        fmt = "<lllHBBbBH"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-
-        # format 1
-        fmt = "<lllH BB B BH d"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-        return s
-
-        # format 2
-        fmt = "<lllH BBBBH HHH"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-        return s
-
-        # format 3
-        fmt = "<lllHBBBBH d HHH"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-        return s
-
-        # format 4
-        fmt = "<lllH BBBBH d BQLffff"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-        return s
-    
-        # format 5
-        fmt = "<lllH BBBB HdHH H BQLffff"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-        return s
-
-        # format 6
-        fmt = "<lllH BBBB hHd"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-        return s
-    
-        # format 7
-        fmt = "<lllHBBBBhHdHHH"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-        return s
-
-        # format 8
-        fmt = "<lllHBBBBhHdHHHH"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-        return s
-
-        # format 9
-        fmt = "<lllH BBBB hH d BQLffff"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-        return s
-
-        # format 10
-        fmt = "<lllH BBBB hHdH HHHB BBffff"
-        fmtlen = struct.calcsize(fmt)
-        s.append[fmt,fmtlen]
-        return s
 
 
     def computebbox_offsets(self, records):
@@ -189,11 +123,6 @@ class laswriter:
         self.hdr.Yoffset = self.hdr.MinY
         self.hdr.Zoffset = self.hdr.MinZ
 
-        # compute the scale factor based on the maximal number of decimal places in the first and last records.
-        # digit1, afterDP1 = self.precision_and_scale(self.hdr.MaxX)
-        # digit2, afterDP2 = self.precision_and_scale(self.hdr.MinX)
-        # self.hdr.Xscalefactor = 10**-(max(afterDP1, afterDP2)-max(digit1,digit2))
-
         digit2, afterDP2 = self.precision_and_scale(self.hdr.MaxX - self.hdr.MinX)
         self.hdr.Xscalefactor = 10**-(8-digit2)
 
@@ -203,18 +132,10 @@ class laswriter:
         digit2, afterDP2 = self.precision_and_scale(self.hdr.MaxZ - self.hdr.MinZ)
         self.hdr.Zscalefactor = 10**-(8-digit2)
 
-        # digit1, afterDP1 = self.precision_and_scale(self.hdr.MaxY)
-        # digit2, afterDP2 = self.precision_and_scale(self.hdr.MinY)
-        # self.hdr.Yscalefactor = 10**-(max(afterDP1, afterDP2)-max(digit1,digit2))
-
-        # digit1, afterDP1 = self.precision_and_scale(self.hdr.MaxZ)
-        # digit2, afterDP2 = self.precision_and_scale(self.hdr.MinZ)
-        # self.hdr.Zscalefactor = 10**-(max(afterDP1, afterDP2)-max(digit1,digit2))
-
-        # set the z scale to cm resolution
-        # self.hdr.Zscalefactor = 0.01
-
     def precision_and_scale(self, x):
+        '''
+        compute the number of digits beafore and after the decimal place so we can accurately scale a float into an integer
+        '''
         max_digits = 14
         int_part = int(abs(x))
         magnitude = 1 if int_part == 0 else int(math.log10(int_part)) + 1
@@ -232,6 +153,7 @@ class laswriter:
     def zerolistmaker(self, n):
         listofzeros = [0] * n
         return listofzeros
+
     def onelistmaker(self, n):
         listofones = [1] * n
         return listofones
@@ -593,7 +515,6 @@ class laswriter:
         self.fileptr.seek(0, 0)                
         self.fileptr.write(data)
 
-
     def setpointflags(self, returnnumber, numberreturns, scandirectionflag, edgeflightline ):
         flags = 0
         flags = self.setBitsFor_returnNo(flags, returnnumber)
@@ -624,13 +545,14 @@ class laswriter:
         Set the index:th bit of v to 1 if x is truthy, else to 0, and return the new value.
         '''
         mask = 1 << offset   # Compute mask, an integer with just bit 'index' set.
-        #   v &= ~mask          # Clear the bit indicated by the mask (if x is False)
-        #   if x:
-        v |= mask         # If x was True, set the bit indicated by the mask.
-        return v            # Return the result, we're done.
+        v |= mask         
+        return v
 
     def setBitsFor_edgeflightline(self, int_type, edgeflightline):
-        if edgeflightline: # set the bit if this is the edge of a scan
+        '''
+        set the bit if this is the edge of a scan
+        '''
+        if edgeflightline: 
             int_type = self.bitSet(int_type, 7)
         return int_type
 
@@ -904,13 +826,11 @@ class laswriter:
 ###############################################################################
 class lashdr:
     def __init__(self):
-
         # version 1.4 header format
         self.hdrfmt = "<4sHHL HH8sBB 32s32sHHH LLBHL 5Ldddd ddddd dddQQ LQ15Q"
         self.hdrlen = struct.calcsize(self.hdrfmt)
 
         # create a default template for a V1.4 header.  We use this for writing purposes
-        # hdr = OrderedDict()
         self.FileSignature =                       b'LASF'
         self.FileSourceID  =                       0
         self.GlobalEncoding =                      17
@@ -944,12 +864,12 @@ class lashdr:
         self.Xoffset =                             0
         self.Yoffset =                             0
         self.Zoffset =                             0
-        self.MaxX =                                -9999999999 #make the default the extreme opposite, so we compute real values along the way
-        self.MinX =                                9999999999
-        self.MaxY =                                -9999999999
-        self.MinY =                                9999999999
-        self.MaxZ =                                -9999999999
-        self.MinZ =                                9999999999
+        self.MaxX =                                0
+        self.MinX =                                0
+        self.MaxY =                                0
+        self.MinY =                                0
+        self.MaxZ =                                0
+        self.MinZ =                                0
 
         self.StartofWaveformDataPacketRecord =     0
         self.StartoffirstExtendedVariableLengthRecord =    0
@@ -978,6 +898,65 @@ class lashdr:
         '''
         return pprint.pformat(vars(self))
 
+    def getsupportedformats(self):
+        s = []
+        # format 0
+        fmt = "<lllHBBbBH"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+
+        # format 1
+        fmt = "<lllH BB B BH d"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+
+        # format 2
+        fmt = "<lllH BBBBH HHH"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+
+        # format 3
+        fmt = "<lllHBBBBH d HHH"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+
+        # format 4
+        fmt = "<lllH BBBBH d BQLffff"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+    
+        # format 5
+        fmt = "<lllH BBBB HdHH H BQLffff"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+
+        # format 6
+        fmt = "<lllH BBBB hHd"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+    
+        # format 7
+        fmt = "<lllHBBBBhHdHHH"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+
+        # format 8
+        fmt = "<lllHBBBBhHdHHHH"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+
+        # format 9
+        fmt = "<lllH BBBB hH d BQLffff"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+
+        # format 10
+        fmt = "<lllH BBBB hHdH HHHB BBffff"
+        fmtlen = struct.calcsize(fmt)
+        s.append([fmt,fmtlen])
+
+        return s
+    
     def hdr2tuple(self):
         '''
         convert the header properties into a tuple so we can easily write it to disc using struct
@@ -1112,34 +1091,13 @@ class lashdr:
         self.Numberofpointsbyreturn14 =                    s[53]
         self.Numberofpointsbyreturn15 =                    s[54]
 
-    def getsupportedformats(self):
-        '''
-        compose a list o the supported point file formats, so we can easily find them
-        '''
-        s = []
-        # format 0
-        fmt = "<lllHBBbBH"
-        fmtlen = struct.calcsize(fmt)
-        s.append([fmt,fmtlen])
-
-        # format 1
-        fmt = "<lllHBBbBHd"
-        fmtlen = struct.calcsize(fmt)
-        s.append([fmt,fmtlen])
-
-        # format 2
-        fmt = "<lllHBBbBH HHH"
-        fmtlen = struct.calcsize(fmt)
-        s.append([fmt,fmtlen])
-
-        return s
-
     def get_PointDataRecordFormat(self):
         return self._PointDataRecordFormat
 
     def set_PointDataRecordFormat(self, value):
         self._PointDataRecordFormat = value
-        self.PointDataRecordLength = self.getsupportedformats()[value][1]
+        formats = self.getsupportedformats()
+        self.PointDataRecordLength = formats[value][1]
 
     PointDataRecordFormat = property(get_PointDataRecordFormat,set_PointDataRecordFormat)
 
