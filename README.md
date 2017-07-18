@@ -4,10 +4,10 @@ python native las read/write module.
 This is going to use the stanadrd libraries from python, ie not use numpy, liblas, or external any dependencies.
 
 # 2DO
-* implement bit fields on point objects
 * Implement writer and confirm it is a valid file
 
 # DONE
+* implement bit fields on point objects
 * implement computation of scale and offset for data. geogs should be 0.0000001, grid should be 0.001
 * implemented format 0
 * moved header into bespoke class
