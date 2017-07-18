@@ -111,13 +111,61 @@ class laswriter:
         s.append[fmt,fmtlen]
 
         # format 1
-        fmt = "<lllHBBbBHd"
+        fmt = "<lllH BB B BH d"
         fmtlen = struct.calcsize(fmt)
         s.append[fmt,fmtlen]
         return s
 
         # format 2
-        fmt = "<lllHBBbBHd"
+        fmt = "<lllH BBBBH HHH"
+        fmtlen = struct.calcsize(fmt)
+        s.append[fmt,fmtlen]
+        return s
+
+        # format 3
+        fmt = "<lllHBBBBH d HHH"
+        fmtlen = struct.calcsize(fmt)
+        s.append[fmt,fmtlen]
+        return s
+
+        # format 4
+        fmt = "<lllH BBBBH d BQLffff"
+        fmtlen = struct.calcsize(fmt)
+        s.append[fmt,fmtlen]
+        return s
+    
+        # format 5
+        fmt = "<lllH BBBB HdHH H BQLffff"
+        fmtlen = struct.calcsize(fmt)
+        s.append[fmt,fmtlen]
+        return s
+
+        # format 6
+        fmt = "<lllH BBBB hHd"
+        fmtlen = struct.calcsize(fmt)
+        s.append[fmt,fmtlen]
+        return s
+    
+        # format 7
+        fmt = "<lllHBBBBhHdHHH"
+        fmtlen = struct.calcsize(fmt)
+        s.append[fmt,fmtlen]
+        return s
+
+        # format 8
+        fmt = "<lllHBBBBhHdHHHH"
+        fmtlen = struct.calcsize(fmt)
+        s.append[fmt,fmtlen]
+        return s
+
+        # format 9
+        fmt = "<lllH BBBB hH d BQLffff"
+        fmtlen = struct.calcsize(fmt)
+        s.append[fmt,fmtlen]
+        return s
+
+        # format 10
+        fmt = "<lllH BBBB hHdH HHHB BBffff"
         fmtlen = struct.calcsize(fmt)
         s.append[fmt,fmtlen]
         return s
@@ -184,14 +232,17 @@ class laswriter:
     def zerolistmaker(self, n):
         listofzeros = [0] * n
         return listofzeros
+    def onelistmaker(self, n):
+        listofones = [1] * n
+        return listofones
 
     def fixemptylists(self):
         if len(self.intensity) == 0: 
             self.intensity = self.zerolistmaker(len(self.x))
         if len(self.returnnumber) == 0:
-            self.returnnumber = self.zerolistmaker(len(self.x))
+            self.returnnumber = self.onelistmaker(len(self.x))
         if len(self.numberreturns) == 0: 
-            self.numberreturns = self.zerolistmaker(len(self.x))
+            self.numberreturns = self.onelistmaker(len(self.x))
         if len(self.scandirectionflag) == 0: 
             self.scandirectionflag = self.zerolistmaker(len(self.x))
         if len(self.edgeflightline) == 0: 
@@ -251,6 +302,8 @@ class laswriter:
 
         self.hdr.Numberofpointrecords += len(self.x)
         self.hdr.LegacyNumberofpointrecords += len(self.x)
+        self.hdr.Numberofpointsbyreturn1 += len(self.x)
+        # self.hdr.numberreturns += len(self.x)
 
         if self.hdr.PointDataRecordFormat == 0:
             for i in range(len(self.x)):
@@ -268,7 +321,7 @@ class laswriter:
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
-
+            return
         if self.hdr.PointDataRecordFormat == 1:
             for i in range(len(self.x)):
                 flags = self.setpointflags(self.returnnumber[i], self.numberreturns[i], self.scandirectionflag[i], self.edgeflightline[i])
@@ -286,10 +339,9 @@ class laswriter:
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
+            return
 
         if self.hdr.PointDataRecordFormat == 2:
-    # def makepoint2(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, red=255, green=255, blue=255):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, red, green, blue)
             for i in range(len(self.x)):
                 flags = self.setpointflags(self.returnnumber[i], self.numberreturns[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
@@ -304,16 +356,13 @@ class laswriter:
                     self.red[i],
                     self.green[i],
                     self.blue[i]
-                    
                     )
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
-
+            return
 
         if self.hdr.PointDataRecordFormat == 3:
-    # def makepoint3(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime, red, green, blue)
             for i in range(len(self.x)):
                 flags = self.setpointflags(self.returnnumber[i], self.numberreturns[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
@@ -333,10 +382,9 @@ class laswriter:
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
+            return
 
         if self.hdr.PointDataRecordFormat == 4:
-    # def makepoint4(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
             for i in range(len(self.x)):
                 flags = self.setpointflags(self.returnnumber[i], self.numberreturns[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
@@ -360,11 +408,9 @@ class laswriter:
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
-
+            return
 
         if self.hdr.PointDataRecordFormat == 5:
-    # def makepoint5(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, scandirectionflag=0, edgeflightline=0, classification=0, scananglerank=0, userdata=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, scandirectionflag, edgeflightline, classification, scananglerank, userdata, pointsourceid, gpstime, red, green, blue, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
             for i in range(len(self.x)):
                 flags = self.setpointflags(self.returnnumber[i], self.numberreturns[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
@@ -391,41 +437,42 @@ class laswriter:
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
-
+            return
 
         if self.hdr.PointDataRecordFormat == 6:
-    # def makepoint6(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime)
             for i in range(len(self.x)):
-                flags = self.setpointflags_6_10(self.returnnumber[i], self.numberreturns[i], self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
+                flag1 = self.setpointflag1_6_10(self.returnnumber[i], self.numberreturns[i])
+                flag2 = self.setpointflag2_6_10(self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
                     int((self.y [i] - yo) / ys),
                     int((self.z [i] - zo) / zs),
                     int(self.intensity[i]),
-                    flags,
+                    flag1,
+                    flag2,
                     self.classification[i],
-                    self.scanangle[i],
                     self.userdata[i],
+                    self.scanangle[i],
                     self.pointsourceid[i],
                     self.gpstime[i]
                     )
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
+            return
 
         if self.hdr.PointDataRecordFormat == 7:
-    # def makepoint7(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue)
             for i in range(len(self.x)):
-                flags = self.setpointflags_6_10(self.returnnumber[i], self.numberreturns[i], self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
+                flag1 = self.setpointflag1_6_10(self.returnnumber[i], self.numberreturns[i])
+                flag2 = self.setpointflag2_6_10(self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
                     int((self.y [i] - yo) / ys),
                     int((self.z [i] - zo) / zs),
                     int(self.intensity[i]),
-                    flags,
+                    flag1,
+                    flag2,
                     self.classification[i],
-                    self.scanangle[i],
                     self.userdata[i],
+                    self.scanangle[i],
                     self.pointsourceid[i],
                     self.gpstime[i],
                     self.red[i],
@@ -435,20 +482,21 @@ class laswriter:
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
+            return
 
         if self.hdr.PointDataRecordFormat == 8:
-    # def makepoint8(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, nir=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue, nir)
             for i in range(len(self.x)):
-                flags = self.setpointflags_6_10(self.returnnumber[i], self.numberreturns[i], self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
+                flag1 = self.setpointflag1_6_10(self.returnnumber[i], self.numberreturns[i])
+                flag2 = self.setpointflag2_6_10(self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
                     int((self.y [i] - yo) / ys),
                     int((self.z [i] - zo) / zs),
                     int(self.intensity[i]),
-                    flags,
+                    flag1,
+                    flag2,
                     self.classification[i],
-                    self.scanangle[i],
                     self.userdata[i],
+                    self.scanangle[i],
                     self.pointsourceid[i],
                     self.gpstime[i],
                     self.red[i],
@@ -459,25 +507,23 @@ class laswriter:
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
+            return
 
         if self.hdr.PointDataRecordFormat == 9:
-    # def makepoint9(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
             for i in range(len(self.x)):
-                flags = self.setpointflags_6_10(self.returnnumber[i], self.numberreturns[i], self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
+                flag1 = self.setpointflag1_6_10(self.returnnumber[i], self.numberreturns[i])
+                flag2 = self.setpointflag2_6_10(self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
                     int((self.y [i] - yo) / ys),
                     int((self.z [i] - zo) / zs),
                     int(self.intensity[i]),
-                    flags,
+                    flag1,
+                    flag2,
                     self.classification[i],
                     self.userdata[i],
                     self.scanangle[i],
                     self.pointsourceid[i],
                     self.gpstime[i],
-                    self.red[i],
-                    self.green[i],
-                    self.blue[i],
                     self.wavepacketdescriptorindex[i],
                     self.byteoffsettowaveformdata[i],
                     self.waveformpacketsize[i],
@@ -489,17 +535,18 @@ class laswriter:
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
+            return
 
         if self.hdr.PointDataRecordFormat == 10:
-    # def makepoint10(self, x, y, z, intensity=0, returnnumber=0, numberreturns=0, classificationflags=0, scannerchannel=0, scandirectionflag=0, edgeflightline=0, classification=0, userdata=0, scanangle=0, pointsourceid=0, gpstime=0, red=255, green=255, blue=255, nir=0, wavepacketdescriptorindex=0, byteoffsettowaveformdata=0, waveformpacketsize=0, returnpointwaveformlocation=0, waveX=0, waveY=0, waveZ=0):
-    #     return (x, y, z, intensity, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline, classification, userdata, scanangle, pointsourceid, gpstime, red, green, blue, nir, wavepacketdescriptorindex, byteoffsettowaveformdata, waveformpacketsize, returnpointwaveformlocation, waveX, waveY, waveZ)
             for i in range(len(self.x)):
-                flags = self.setpointflags_6_10(self.returnnumber[i], self.numberreturns[i], self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
+                flag1 = self.setpointflag1_6_10(self.returnnumber[i], self.numberreturns[i])
+                flag2 = self.setpointflag2_6_10(self.classificationflags[i], self.scannerchannel[i], self.scandirectionflag[i], self.edgeflightline[i])
                 n = (int((self.x[i] - xo) / xs),
                     int((self.y [i] - yo) / ys),
                     int((self.z [i] - zo) / zs),
                     int(self.intensity[i]),
-                    flags,
+                    flag1,
+                    flag2,
                     self.classification[i],
                     self.userdata[i],
                     self.scanangle[i],
@@ -508,6 +555,7 @@ class laswriter:
                     self.red[i],
                     self.green[i],
                     self.blue[i],
+                    self.nir[i],
                     self.wavepacketdescriptorindex[i],
                     self.byteoffsettowaveformdata[i],
                     self.waveformpacketsize[i],
@@ -519,6 +567,7 @@ class laswriter:
                 # now write the record to disc
                 record_struct = struct.Struct(self.supportedformats[self.hdr.PointDataRecordFormat][0])
                 self.fileptr.write(record_struct.pack(*n))
+            return
 
     def close(self):
         self.fileptr.close()
@@ -553,10 +602,14 @@ class laswriter:
         flags = self.setBitsFor_edgeflightline(flags, edgeflightline)
         return flags
 
-    def setpointflags_6_10(self, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline ):
+    def setpointflag1_6_10(self, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline ):
         flags = 0
         flags = self.setBitsFor_returnNo6_10(flags, returnnumber)
         flags = self.setBitsFor_numberreturns6_10(flags, numberreturns)
+        return flags
+
+    def setpointflag2_6_10(self, returnnumber, numberreturns, classificationflags, scannerchannel, scandirectionflag, edgeflightline ):
+        flags = 0
         flags = self.setBitsFor_scandirectionflag(flags, scandirectionflag)
         flags = self.setBitsFor_edgeflightline(flags, edgeflightline)
         return flags
@@ -578,33 +631,33 @@ class laswriter:
 
     def setBitsFor_edgeflightline(self, int_type, edgeflightline):
         if edgeflightline: # set the bit if this is the edge of a scan
-            int_type = bitSet(int_type, 7)
+            int_type = self.bitSet(int_type, 7)
         return int_type
 
     def setBitsFor_scandirectionflag(self, int_type, scandirectionflag):
         if scandirectionflag: #positive direction
-            int_type = bitSet(int_type, 6)
+            int_type = self.bitSet(int_type, 6)
         return int_type
 
     def setBitsFor_numberreturns(self, int_type, numberreturns):
         if numberreturns == 0:
             return int_type
         if numberreturns == 1:
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if numberreturns == 2:
-            int_type = bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 4)
             return int_type
         if numberreturns == 3:
-            int_type = bitSet(int_type, 3)
-            int_type = bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 4)
             return int_type
         if numberreturns == 4:
-            int_type = bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 5)
             return int_type
         if numberreturns == 5:
-            int_type = bitSet(int_type, 3)
-            int_type = bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 5)
             return int_type
         return int_type
 
@@ -612,21 +665,21 @@ class laswriter:
         if returnNo == 0:
             return int_type
         if returnNo == 1:
-            int_type = bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 0)
             return int_type
         if returnNo == 2:
-            int_type = bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 1)
             return int_type
         if returnNo == 3:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 1)
             return int_type
         if returnNo == 4:
-            int_type = bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 2)
             return int_type
         if returnNo == 5:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 2)
             return int_type
         return int_type
 
@@ -635,65 +688,65 @@ class laswriter:
         if returnNo == 0:
             return int_type
         if returnNo == 1:
-            int_type = bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 0)
             return int_type
         if returnNo == 2:
-            int_type = bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 1)
         if returnNo == 3:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 1)
             return int_type
         if returnNo == 4:
-            int_type = bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 2)
             return int_type
         if returnNo == 5:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 2)
             return int_type
         if returnNo == 6:
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 2)
             return int_type
         if returnNo == 7:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 2)
             return int_type
         if returnNo == 8:
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if returnNo == 9:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if returnNo == 10:
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if returnNo == 11:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if returnNo == 12:
-            int_type = bitSet(int_type, 2)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if returnNo == 13:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 2)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if returnNo == 14:
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 2)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if returnNo == 15:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 2)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         return int_type
 
@@ -702,66 +755,66 @@ class laswriter:
         if numberreturns == 0:
             return int_type
         if numberreturns == 1:
-            int_type = bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 4)
             return int_type
         if numberreturns == 2:
-            int_type = bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 5)
             return int_type
         if numberreturns == 3:
-            int_type = bitSet(int_type, 4)
-            int_type = bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 5)
             return int_type
         if numberreturns == 4:
-            int_type = bitSet(int_type, 6)
+            int_type = self.bitSet(int_type, 6)
             return int_type
         if numberreturns == 5:
-            int_type = bitSet(int_type, 4)
-            int_type = bitSet(int_type, 6)
+            int_type = self.bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 6)
             return int_type
         if numberreturns == 6:
-            int_type = bitSet(int_type, 5)
-            int_type = bitSet(int_type, 6)
+            int_type = self.bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 6)
             return int_type
         if numberreturns == 7:
-            int_type = bitSet(int_type, 4)
-            int_type = bitSet(int_type, 5)
-            int_type = bitSet(int_type, 6)
+            int_type = self.bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 6)
             return int_type
         if numberreturns == 8:
-            int_type = bitSet(int_type, 8)
+            int_type = self.bitSet(int_type, 8)
             return int_type
         if numberreturns == 9:
-            int_type = bitSet(int_type, 4)
-            int_type = bitSet(int_type, 8)
+            int_type = self.bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 8)
             return int_type
         if numberreturns == 10:
-            int_type = bitSet(int_type, 5)
-            int_type = bitSet(int_type, 7)
+            int_type = self.bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 7)
             return int_type
         if numberreturns == 11:
-            int_type = bitSet(int_type, 4)
-            int_type = bitSet(int_type, 6)
-            int_type = bitSet(int_type, 7)
+            int_type = self.bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 6)
+            int_type = self.bitSet(int_type, 7)
             return int_type
         if numberreturns == 12:
-            int_type = bitSet(int_type, 6)
-            int_type = bitSet(int_type, 7)
+            int_type = self.bitSet(int_type, 6)
+            int_type = self.bitSet(int_type, 7)
             return int_type
         if numberreturns == 13:
-            int_type = bitSet(int_type, 4)
-            int_type = bitSet(int_type, 6)
-            int_type = bitSet(int_type, 7)
+            int_type = self.bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 6)
+            int_type = self.bitSet(int_type, 7)
             return int_type
         if numberreturns == 14:
-            int_type = bitSet(int_type, 5)
-            int_type = bitSet(int_type, 6)
-            int_type = bitSet(int_type, 7)
+            int_type = self.bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 6)
+            int_type = self.bitSet(int_type, 7)
             return int_type
         if numberreturns == 15:
-            int_type = bitSet(int_type, 4)
-            int_type = bitSet(int_type, 5)
-            int_type = bitSet(int_type, 6)
-            int_type = bitSet(int_type, 7)
+            int_type = self.bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 6)
+            int_type = self.bitSet(int_type, 7)
             return int_type
         return int_type
 
@@ -770,65 +823,65 @@ class laswriter:
         if classificationflags == 0:
             return int_type
         if classificationflags == 1:
-            int_type = bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 0)
             return int_type
         if classificationflags == 2:
-            int_type = bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 1)
         if classificationflags == 3:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 1)
             return int_type
         if classificationflags == 4:
-            int_type = bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 2)
             return int_type
         if classificationflags == 5:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 2)
             return int_type
         if classificationflags == 6:
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 2)
             return int_type
         if classificationflags == 7:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 2)
             return int_type
         if classificationflags == 8:
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if classificationflags == 9:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if classificationflags == 10:
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if classificationflags == 11:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if classificationflags == 12:
-            int_type = bitSet(int_type, 2)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if classificationflags == 13:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 2)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if classificationflags == 14:
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 2)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         if classificationflags == 15:
-            int_type = bitSet(int_type, 0)
-            int_type = bitSet(int_type, 1)
-            int_type = bitSet(int_type, 2)
-            int_type = bitSet(int_type, 3)
+            int_type = self.bitSet(int_type, 0)
+            int_type = self.bitSet(int_type, 1)
+            int_type = self.bitSet(int_type, 2)
+            int_type = self.bitSet(int_type, 3)
             return int_type
         return int_type
 
@@ -837,14 +890,14 @@ class laswriter:
         if scannerchannel == 0:
             return int_type
         if scannerchannel == 1:
-            int_type = bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 4)
             return int_type
         if scannerchannel == 2:
-            int_type = bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 5)
             return int_type
         if scannerchannel == 3:
-            int_type = bitSet(int_type, 4)
-            int_type = bitSet(int_type, 5)
+            int_type = self.bitSet(int_type, 4)
+            int_type = self.bitSet(int_type, 5)
             return int_type
         return int_type
 
