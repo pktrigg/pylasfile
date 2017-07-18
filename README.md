@@ -8,6 +8,8 @@ This is going to use the stanadrd libraries from python, ie not use numpy, libla
 * add support for las 1.2
 * add support for las 1.3
 * try out mmap to see if it is quicker
+* add VLR for WGS84 CRS
+* add support for extended VLR
 
 # DONE
 * code clean up
