@@ -956,7 +956,7 @@ class lashdr:
         s.append([fmt,fmtlen])
 
         return s
-    
+
     def hdr2tuple(self):
         '''
         convert the header properties into a tuple so we can easily write it to disc using struct

@@ -4,10 +4,13 @@ python native las read/write module.
 This is going to use the stanadrd libraries from python, ie not use numpy, liblas, or external any dependencies.
 
 # 2DO
-* Implement mmap
-* code clean up
+* implement mmap
+* add support for las 1.2
+* add support for las 1.3
+* try out mmap to see if it is quicker
 
 # DONE
+* code clean up
 * Implement writer and confirm it is a valid file
 * implement bit fields on point objects
 * implement computation of scale and offset for data. geogs should be 0.0000001, grid should be 0.001
