@@ -546,7 +546,7 @@ class laswriter:
 
     def bitSet(self, v, offset):
         '''
-        Set the index:th bit of v to 1 if x is truthy, else to 0, and return the new value.
+        Set the index:th bit of v to 1 and return the new value.
         '''
         mask = 1 << offset   # Compute mask, an integer with just bit 'index' set.
         v |= mask         
@@ -1147,7 +1147,6 @@ class lasreader:
         self.scannerchannel = []
         self.userdata = []
         self.scanangle = []
-
 
     def close(self):
         '''
