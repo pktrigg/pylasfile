@@ -5,15 +5,16 @@ This is going to use the standard libraries from python, ie NOT use numpy, libla
 
 # 2DO
 * add support for lazzip so we can unzip and zip
-* add test for 'LASF' in header, and quit if invalid
-* add test for header byte read so we can see what version las to read
-* add support for las 1.2
-* add support for las 1.3
-* add VLR for WGS84 CRS
 * add support for extended VLR
 * try out mmap to see if it is quicker
 
 # DONE
+* tested writer in all formats with lasinfo.
+* add write support for v1.2
+* add read support for las 1.2 (for support of fm)
+* add test for 'LASF' in header, and quit if invalid
+* add test for header byte read so we can see what version las to read
+* add VLR for WGS84 CRS
 * code clean up
 * Implement writer and confirm it is a valid file
 * implement bit fields on point objects
