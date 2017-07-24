@@ -27,9 +27,9 @@ import random
 
 def main():
 
-    # testreader("C:/development/python/samplev1.2.las")
+    testreader("C:/development/python/samplev1.2.las")
     # testreader("C:/development/python/samplev1.4.las")
-    testwriter()
+    # testwriter()
 
 def testwriter():
     '''
@@ -114,8 +114,6 @@ class laswriter:
         '''
 
         # before we write, we need to set the file pointer to the end of the VLR section , which is directly after the header block
-        # self.fileptr.seek(self.hdr.HeaderSize, 0)
-
         vlrl = self.getVLRTotalLength()
         self.fileptr.seek(self.hdr.HeaderSize + vlrl, 0)
 
@@ -165,7 +163,6 @@ class laswriter:
         '''
         compute the bounding box of all records in the list
         '''
-
         self.hdr.MaxX = max(self.x) 
         self.hdr.MinX = min(self.x) 
 
@@ -631,6 +628,9 @@ class laswriter:
         return int_type
 
     def setBitsFor_numberreturns(self, int_type, numberreturns):
+        '''
+        packs the number of returns into the byte at the correct offset
+        '''
         if numberreturns == 0:
             return int_type
         if numberreturns == 1:
@@ -653,6 +653,9 @@ class laswriter:
         return int_type
 
     def setBitsFor_returnNo(self, int_type, returnNo):
+        '''
+        packs the return number into the byte at the correct offset
+        '''
         if returnNo == 0:
             return int_type
         if returnNo == 1:
@@ -675,7 +678,11 @@ class laswriter:
         return int_type
 
     def setBitsFor_returnNo6_10(self, int_type, returnNo):
-        # bits 0-3
+        '''
+        packs the return number into the byte at the correct offset for the las v1.4
+        bits 0-3
+        '''
+
         if returnNo == 0:
             return int_type
         if returnNo == 1:
@@ -742,7 +749,10 @@ class laswriter:
         return int_type
 
     def setBitsFor_numberreturns6_10(self, int_type, numberreturns):
+        '''
+        packs the number of return into the byte at the correct offset for the las v1.4
         # bits 4-7
+        '''
         if numberreturns == 0:
             return int_type
         if numberreturns == 1:
@@ -810,7 +820,10 @@ class laswriter:
         return int_type
 
     def setBitsFor_classificationflags6_10(self, int_type, classificationflags):
+        '''
+        packs the classification flag at the correct offset for the las v1.4
         # bits 0-3
+        '''
         if classificationflags == 0:
             return int_type
         if classificationflags == 1:
@@ -877,7 +890,10 @@ class laswriter:
         return int_type
 
     def setBitsFor_scannerchannel6_10(self, int_type, scannerchannel):
+        '''
+        packs the scanner channel at the correct offset for the las v1.4
         # bits 4 & 5
+        '''
         if scannerchannel == 0:
             return int_type
         if scannerchannel == 1:
@@ -980,13 +996,6 @@ class lashdr:
         '''
         return pprint.pformat(vars(self))
 
-    # def getsuportedfileformats(self):
-    #     '''
-    #     returns a list of supported LAS file formats
-    #     '''
-    #     s = []
-    #     # format 1.4
-        
     def getsuportedpointformats(self):
         '''
         returns a list of supported point file formats.
